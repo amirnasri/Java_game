@@ -1,64 +1,48 @@
-import java.awt.Graphics;
 import java.awt.Image;
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 
 import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 
-public class Game_manager extends JFrame {
+public class Game_manager {
 
-	private Image[][] tile_map;
-	private HashMap<Character, Image> game_images;
-	private JPanel panel;
+	HashMap<String, ImageIcon> images;
 	
-	public Game_manager() {
-		
-		panel = new JPanel() {
-			
-			@Override
-			protected void paintComponent(Graphics g) {
-				g.drawString("Hello", 100, 100);
-			}
-		};
-		add(panel);
-	}
-	
-	
-	private void load_game_images() {
-		ImageIcon im = new ImageIcon("images/player1.png");
-		
-	}
-	
-	private void load_tile_map() throws IOException {
-		int row = 0;
-		String line;
-		BufferedReader f = new BufferedReader(new FileReader("tile_map"));
-		
-		while ((line = f.readLine()) != null) {
-			row += 1;
-			for (int col = 0; col < line.length(); col++) {
-				char tile = line.charAt(col);
-				tile_map[row][col] = game_images.get(tile); 
-			}
-		}
-		f.close();
-	}
-
-	
-	public void start() {
-		
-	}
-	
-	public static void main(String[] args) throws FileNotFoundException {
-		
+	public static void main(String[] args) throws IOException {
 		Game_manager gm = new Game_manager();
-		gm.start();
+		//gm.load_tile_map();
+		gm.load_images();
+	}
+
+	Game_manager() {
+		images = new HashMap<String, ImageIcon>();
+	}
+
+	void load_tile_map() throws IOException {
+		BufferedReader map_file = new BufferedReader(new FileReader("maps/map1.txt"));
+		String line;
+		while ((line = map_file.readLine()) != null) {
+			
+			System.out.println(line);
+			
+		}
+	}
+	
+	void load_images() {
+	
+		String image_path = "images/";
+		images.put("o", new ImageIcon(image_path + "star1.png"));
+		images.put("1", new ImageIcon(image_path + "grub1.png"));
+		images.put("2", new ImageIcon(image_path + "fly1.png"));
+		images.put("*", new ImageIcon(image_path + "heart1.png"));
+		images.put("!", new ImageIcon(image_path + "music1.png"));
 		
-	}	
+		for (char ch = 'A'; ch < 'H'; ch++) {
+			images.put(String.valueOf(ch), new ImageIcon(image_path + "tile_" + ch));
+		}
+		
+	}
 }
