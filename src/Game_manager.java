@@ -15,6 +15,13 @@ public class Game_manager {
 		Game_manager gm = new Game_manager();
 		//gm.load_tile_map();
 		gm.load_images();
+		
+		Screen_manager sc = new Screen_manager();
+		Graphics2D g2d = sc.get_graphics();
+		Image im = new ImageIcon("images/player1.png").getImage();
+		g2d.drawImage(im, 100, 100, null); 
+		g2d.dispose();
+		sc.show();
 	}
 
 	Game_manager() {
