@@ -1,4 +1,3 @@
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -7,6 +6,7 @@ import java.util.HashMap;
 
 import javax.swing.ImageIcon;
 
+
 public class Game_manager {
 
 	HashMap<String, ImageIcon> images;
@@ -14,8 +14,7 @@ public class Game_manager {
 	public static void main(String[] args) throws IOException {
 		Game_manager gm = new Game_manager();
 		//gm.load_tile_map();
-		//gm.load_images();
-		
+		gm.load_images();
 		
 		Screen_manager sc = new Screen_manager();
 		Graphics2D g2d = sc.get_graphics();
