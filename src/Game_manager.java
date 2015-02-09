@@ -15,6 +15,7 @@ import javax.swing.ImageIcon;
 
 public class Game_manager {
 
+	fkdakfsa
 	private HashMap<Character, Image> images;
 	private Image[][] tiles;
 	private LinkedList<Sprite> sprites;
