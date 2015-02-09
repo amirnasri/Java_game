@@ -6,36 +6,37 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
+import java.awt.event.KeyListener;
 
 import javax.swing.JFrame;
 
 public class Screen_manager {
 
 	private Canvas canvas;
-
+	private JFrame frame;
+	
 	Screen_manager() {
+	}
 
-		JFrame frame = new JFrame();
+	public void create_screen(int screen_width, int screen_height) {
+		frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setUndecorated(true);
-        frame.setIgnoreRepaint(true);
-        frame.setResizable(false);
-        frame.setSize(800, 600);
+        //frame.setIgnoreRepaint(true);
+        //frame.setResizable(false);
+        frame.setSize(screen_width, screen_height);
 		
 		canvas = new Canvas();
-		canvas.setPreferredSize(new Dimension(800, 600));
+		canvas.setPreferredSize(new Dimension(screen_width, screen_height));
 		frame.add(canvas);
+		frame.setVisible(true);
 
 		//Container content_pane = frame.getContentPane();
 		//content_pane.setLayout(new GridLayout(1, 1));
 		
-		
-		frame.setVisible(true);
 		canvas.createBufferStrategy(2);
-
-
 	}
-
+	
 	public Graphics2D get_graphics() {
 		return (Graphics2D) canvas.getBufferStrategy().getDrawGraphics();
 	}
@@ -43,5 +44,9 @@ public class Screen_manager {
 	public void show() {
 		canvas.getBufferStrategy().show();
         Toolkit.getDefaultToolkit().sync();
+	}
+	
+	public void register_key_listener(KeyListener key_listener) {
+		frame.addKeyListener(key_listener);
 	}
 }
