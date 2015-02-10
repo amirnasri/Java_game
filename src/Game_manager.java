@@ -15,7 +15,6 @@ import javax.swing.ImageIcon;
 
 public class Game_manager {
 
-	fkdakfsa
 	private HashMap<Character, Image> images;
 	private Image[][] tiles;
 	private LinkedList<Sprite> sprites;
@@ -24,6 +23,9 @@ public class Game_manager {
 	private Input_manager input_manager;
 	private int tile_width;
 	private int tile_height;
+	private int display_width;
+	private int display_height;
+	long current_time;
 	
 	private final static int Timer_delay = 10;
 	
@@ -35,15 +37,16 @@ public class Game_manager {
 		images = new HashMap<Character, Image>();
 		sprites = new LinkedList<Sprite>();
 		load_images();
-		set_tile_dimension();
 		load_tile_map();
 
 		screen_manager = new Screen_manager();
-		screen_manager.create_screen(tile_height * tiles.length * 16 / 9, tile_height * tiles.length);
+		display_height = tile_height * tiles.length;
+		display_width = display_height * 16 / 9;
+		screen_manager.create_screen(display_width, display_height);
 		input_manager = new Input_manager(screen_manager);
 		register_key_actions(input_manager);
 		
-		
+		/*
 		ActionListener timer_listerner = new ActionListener() {
 			
 			@Override
@@ -54,9 +57,27 @@ public class Game_manager {
 		
 		Timer timer = new Timer(Timer_delay, timer_listerner);
 		timer.start();
-		
+		*/
+		current_time = 0;
+		game_loop();
 	}
 
+	void game_loop() {
+		
+		while (true) {
+			
+			update();
+			render_display();
+			
+			try {
+				Thread.sleep(Timer_delay);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		
+	}
+	
 	private void register_key_actions(Input_manager input_manager) {
 		Key_action action_left = new Key_action("action_left", KeyEvent.VK_LEFT) {
 			
@@ -76,7 +97,7 @@ public class Game_manager {
 			}
 		};
 
-		Key_action action_right = new Key_action("action_left", KeyEvent.VK_RIGHT) {
+		Key_action action_right = new Key_action("action_right", KeyEvent.VK_RIGHT) {
 			
 			@Override
 			public void key_typed() {
@@ -99,6 +120,9 @@ public class Game_manager {
 	}
 	
 	public void load_tile_map() throws IOException {
+
+		set_tile_dimension();
+		
 		BufferedReader map_file = new BufferedReader(new FileReader("maps/map1.txt"));
 		String line;
 		LinkedList<String> lines = new LinkedList<String>();
@@ -124,14 +148,14 @@ public class Game_manager {
 				else {
 					Image image = images.get(ch);
 					if (image != null) {
-						Sprite sprite = new Sprite(j * tile_width, i * tile_height, -0.2f, 0, image);
+						Sprite sprite = new Sprite(j * tile_width, i * tile_height, -0.1f, 0, image);
 						sprites.add(sprite);
 					}
 				}
 			}
 		}
 		
-		player = new Sprite(100, 100, 0, 0, images.get('p'));
+		player = new Player(100, 100, 0, 0, images.get('p'));
 	}
 	
 	private void set_tile_dimension() {
@@ -139,23 +163,42 @@ public class Game_manager {
 		tile_height = images.get('A').getHeight(null);
 	}
 	
-	void render_tile_map() {
-		Graphics2D g2d = screen_manager.get_graphics();
+	void update() {
+		int elapsed_time = 0;
+		long new_time = System.currentTimeMillis();
+		if (current_time != 0)
+			elapsed_time = (int) (new_time - current_time);
+		current_time = new_time;
+	
+		player.update(elapsed_time);
 		
+		for (Sprite s: sprites)
+			s.update(elapsed_time);
+	}
+
+	void render_display() {
+		
+		Graphics2D g2d = screen_manager.get_graphics();
 		
 		Image background = images.get('b');
 		g2d.drawImage(background, 0, 0, null);
-		player.update(Timer_delay);
+		
+		int player_x = player.get_x();
+		int display_x_min = Math.min(tile_width * tiles[0].length - display_width, Math.max(0, player_x - display_width/2 - tile_width));
+		//int display_x_max = Math.min(tile_width * tiles[0].length, display_x_min + display_width + 2 * tile_width);
+		int display_x_max = display_x_min + display_width + 2 * tile_width;
+		int offset = Math.min(tile_width * tiles[0].length - display_width, Math.max(0, player_x - display_width/2));
+		Sprite.set_display_x_offset(offset);
+
 		player.draw(g2d);
-		//g2d.drawImage(new ImageIcon("images/player1.png").getImage(), 100, 100, null);
 		
 		for (int i = 0; i < tiles.length; i++)
-			for (int j=0; j < tiles[0].length; j++)
-				g2d.drawImage(tiles[i][j], j * tile_width, i * tile_height, null);
-		for (Sprite s: sprites) {
-			s.update(Timer_delay);
+			for (int j=display_x_min/tile_width; j < display_x_max/tile_width; j++)
+				g2d.drawImage(tiles[i][j], j * tile_width - offset, i * tile_height, null);
+		
+		for (Sprite s: sprites)
 			s.draw(g2d);
-		}
+		
 		g2d.dispose();
 		screen_manager.show();
 	}
