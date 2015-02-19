@@ -10,13 +10,26 @@ public class Player extends Sprite {
 	
 	public Player(int x, int y, float dx, float dy, Image image) {
 		super(x, y, dx, dy, image);
-		state = States.NORMAL;
+		state = States.IN_AIR;
 	}
 
 	public void update(int elapsed_time) {
-		if (state == States.IN_AIR) {
-			dy = dy + 0.1f;
-		}
+		//if (state == States.IN_AIR) {
+		dy = dy + 0.1f;
+		//}
+		
 		super.update(elapsed_time);
+	}
+	
+	public void tile_collision() {
+		if (dy > 0) {
+			dy = 0;
+			state = States.ON_GROUND;
+		}
+	}
+	
+	public void jump() {
+		dy = -2;
+		state = States.IN_AIR;
 	}
 }

@@ -19,7 +19,7 @@ public class Game_manager {
 	private HashMap<Character, Image> images;
 	private LinkedList<Sprite> sprites;
 	private Tiles tiles;
-	private Sprite player;
+	private Player player;
 	private Screen_manager screen_manager;
 	private Input_manager input_manager;
 	private int tile_width;
@@ -101,10 +101,12 @@ public class Game_manager {
 	void game_loop() {
 		
 		while (true) {
-			
+		
 			update();
 			check_collision();
+			
 			render_display();
+						
 			
 			try {
 				Thread.sleep(Timer_delay);
@@ -115,7 +117,7 @@ public class Game_manager {
 		
 	}
 	
-	private void check_collision() {
+	private boolean check_collision() {
 		
 		Rectangle player_bb = player.get_bounding_box();
 		
@@ -127,11 +129,14 @@ public class Game_manager {
 					Rectangle tile_bounding_box = new Rectangle((int) i * tile.getWidth(null), (int) j * tile.getHeight(null), tile.getWidth(null), tile.getHeight(null));
 					
 					if (player_bb.intersects(tile_bounding_box)) {
-						System.out.println("Collision!!!!!");
+						//System.out.println("Collision!!!!!");
+						player.tile_collision();
+						return true;
 					}
 					
 				}
 			}
+		return false;
 	}
 	
 	private void register_key_actions(Input_manager input_manager) {
@@ -171,25 +176,25 @@ public class Game_manager {
 			}
 		};
 
-		Key_action action_up = new Key_action("action_left", KeyEvent.VK_UP) {
+		Key_action action_up = new Key_action("action_up", KeyEvent.VK_UP) {
 			
 			@Override
 			public void key_typed() {
-				player.set_y_velocity(-0.5f);
+				//player.set_y_velocity(-0.5f);
 			}
 			
 			@Override
 			public void key_released() {
-				player.set_y_velocity(0);
+				//player.set_y_velocity(0);
 			}
 			
 			@Override
 			public void key_pressed() {
-				player.set_y_velocity(-0.5f);
+				player.jump();
 			}
 		};
 
-		Key_action action_down = new Key_action("action_left", KeyEvent.VK_DOWN) {
+		Key_action action_down = new Key_action("action_down", KeyEvent.VK_DOWN) {
 			
 			@Override
 			public void key_typed() {
