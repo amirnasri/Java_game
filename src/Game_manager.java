@@ -271,9 +271,12 @@ public class Game_manager {
 		current_time = new_time;
 	
 		player.update(elapsed_time);
+		player.update_apply();
 		
-		for (Sprite s: sprites)
+		for (Sprite s: sprites) {
 			s.update(elapsed_time);
+			s.update_apply();
+		}
 	}
 
 	void render_display() {
@@ -283,7 +286,7 @@ public class Game_manager {
 		Image background = images.get('b');
 		g2d.drawImage(background, 0, 0, null);
 		
-		int player_x = player.get_x();
+		int player_x = (int) player.get_x();
 		display_x_min = Math.min(total_display_width - display_width, Math.max(0, player_x - display_width/2 - tile_width));
 		//int display_x_max = Math.min(tile_width * tiles[0].length, display_x_min + display_width + 2 * tile_width);
 		display_x_max = display_x_min + display_width + 2 * tile_width;

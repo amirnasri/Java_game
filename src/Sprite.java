@@ -8,6 +8,8 @@ public class Sprite {
 	protected float y;
 	protected float dx;
 	protected float dy;
+	protected float x_new;
+	protected float y_new;
 	private Image image;
 	private int image_width;
 	private int image_height;
@@ -28,10 +30,15 @@ public class Sprite {
 	}
 
 	public void update(int elapsed_time) {
-		x = x + dx * elapsed_time;
-		y = y + dy * elapsed_time;
+		x_new = x + dx * elapsed_time;
+		y_new = y + dy * elapsed_time;
 	}
 	
+	public void update_apply() {
+		x = x_new;
+		y = y_new;
+	}
+		
 	public void draw(Graphics2D g2d) {
 		g2d.drawImage(image, (int) x - display_x_offset, (int) y, null);
 	}
@@ -44,10 +51,22 @@ public class Sprite {
 		this.dy = dy;
 	}
 	
-	public int get_x() {
-		return (int) x;
+	public float get_x() {
+		return x;
 	}
 	
+	public float get_y() {
+		return y;
+	}
+
+	public float get_x_new() {
+		return x_new;
+	}
+
+	public float get_y_new() {
+		return y_new;
+	}
+
 	public Rectangle get_bounding_box() {
 		//return new Rectangle(x + image_width/2, y + image_height/2, image_width, image_height);
 		return new Rectangle((int) x, (int) y, image_width, image_height);
