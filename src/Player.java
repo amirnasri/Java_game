@@ -15,21 +15,25 @@ public class Player extends Sprite {
 
 	public void update(int elapsed_time) {
 		//if (state == States.IN_AIR) {
-		dy = dy + 0.1f;
+		v_y = v_y + 0.1f;
 		//}
 		
 		super.update(elapsed_time);
 	}
 	
-	public void tile_collision() {
-		if (dy > 0) {
-			dy = 0;
+	public void tile_collision_x() {
+		v_x = 0;
+	}
+	
+	public void tile_collision_y() {
+		if (v_y > 0) {
+			v_y = 0;
 			state = States.ON_GROUND;
 		}
 	}
-	
+
 	public void jump() {
-		dy = -2;
+		v_y = -2;
 		state = States.IN_AIR;
 	}
 }

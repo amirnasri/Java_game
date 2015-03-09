@@ -6,8 +6,8 @@ import java.awt.Rectangle;
 public class Sprite {
 	protected float x;
 	protected float y;
-	protected float dx;
-	protected float dy;
+	protected float v_x;
+	protected float v_y;
 	protected float x_new;
 	protected float y_new;
 	private Image image;
@@ -15,11 +15,11 @@ public class Sprite {
 	private int image_height;
 	private static int display_x_offset;
 	
-	public Sprite(int x, int y, float dx, float dy, Image image) {
+	public Sprite(int x, int y, float v_x, float v_y, Image image) {
 		this.x = x;
 		this.y = y;
-		this.dx = dx;
-		this.dy = dy;
+		this.v_x = v_x;
+		this.v_y = v_y;
 		this.image = image;
 		this.image_width = image.getWidth(null);
 		this.image_height = image.getHeight(null);
@@ -30,8 +30,8 @@ public class Sprite {
 	}
 
 	public void update(int elapsed_time) {
-		x_new = x + dx * elapsed_time;
-		y_new = y + dy * elapsed_time;
+		x_new = x + v_x * elapsed_time;
+		y_new = y + v_y * elapsed_time;
 	}
 	
 	public void update_apply() {
@@ -43,12 +43,12 @@ public class Sprite {
 		g2d.drawImage(image, (int) x - display_x_offset, (int) y, null);
 	}
 	
-	public void set_x_velocity(float dx) {
-		this.dx = dx;
+	public float set_x(float x) {
+		return this.x = x;
 	}
-
-	public void set_y_velocity(float dy) {
-		this.dy = dy;
+	
+	public float set_y(float y) {
+		return this.y = y;
 	}
 	
 	public float get_x() {
@@ -59,16 +59,32 @@ public class Sprite {
 		return y;
 	}
 
-	public float get_x_new() {
-		return x_new;
+	public void set_v_x(float v_x) {
+		this.v_x = v_x;
 	}
 
-	public float get_y_new() {
-		return y_new;
+	public void set_v_y(float v_y) {
+		this.v_y = v_y;
+	}
+
+	public float get_v_x() {
+		return v_x;
+	}
+
+	public float get_v_y() {
+		return v_y;
 	}
 
 	public Rectangle get_bounding_box() {
 		//return new Rectangle(x + image_width/2, y + image_height/2, image_width, image_height);
 		return new Rectangle((int) x, (int) y, image_width, image_height);
+	}
+	
+	public float get_width() {
+		return image_width;
+	}
+
+	public float get_height() {
+		return image_height;
 	}
 }

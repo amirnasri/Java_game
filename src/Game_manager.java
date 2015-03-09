@@ -33,7 +33,7 @@ public class Game_manager {
 	private int display_x_max;
 	long current_time;
 	
-	private final static int Timer_delay = 10;
+	private final static int Timer_delay = 1;
 	
 	private class Tiles {
 		private Image[][] tiles;
@@ -47,10 +47,15 @@ public class Game_manager {
 		}
 		
 		void set_tile(int i, int j, Image image) {
+			if (i < 0 || j < 0 || i >= dim1 || j >= dim2)
+				return;
 			tiles[i][j] = image;
 		}
 		
 		Image get_tile(int i, int j) {
+			if (i < 0 || j < 0 || i >= dim1 || j >= dim2)
+				return null;
+			
 			return tiles[i][j];
 		}
 		
@@ -61,6 +66,7 @@ public class Game_manager {
 				return dim2;
 			return -1;
 		}
+	
 	}
 	
 	
@@ -100,10 +106,17 @@ public class Game_manager {
 
 	void game_loop() {
 		
-		while (true) {
+		int elapsed_time = 0;
+		long new_time;
 		
-			update();
-			check_collision();
+		while (true) {
+			new_time = System.currentTimeMillis();
+			if (current_time != 0)
+				elapsed_time = (int) (new_time - current_time);
+			current_time = new_time;
+
+			update(elapsed_time);
+			check_collision(elapsed_time);
 			
 			render_display();
 						
@@ -117,12 +130,71 @@ public class Game_manager {
 		
 	}
 	
-	private boolean check_collision() {
+	private boolean check_collision(int elapsed_time) {
+		
+		boolean collision = false;
 		
 		Rectangle player_bb = player.get_bounding_box();
 		
 		//check collision between the player and tiles
-		for (int i=display_x_min/tile_width; i < display_x_max/tile_width; i++) 
+		
+		float dy = player.get_v_y() * elapsed_time;
+		if (dy > 0) {
+			int cur_tile_x = (int) Math.floor((player.get_x() + player.get_width()/2)/tile_width);
+			int cur_tile_y = (int) Math.floor((player.get_y() + player.get_height())/tile_height);
+
+			//int new_tile_x = (int) Math.floor((player.get_x_new() + player.get_width()/2)/tile_width);
+			int new_tile_y = (int) Math.floor((player.get_y() + dy + player.get_height())/tile_height);
+			
+			for (int t=cur_tile_y; t <= new_tile_y; t++) {
+				if (tiles.get_tile(cur_tile_x, t) != null) {
+					player.set_x(player.get_x() + player.get_v_x() * elapsed_time);
+					player.set_y(t * tile_height - player.get_height());
+					player.tile_collision_y();
+					collision = true;
+					break;
+				}
+					
+
+			}
+		}
+
+		float dx = player.get_v_x() * elapsed_time;
+		int cur_tile_y = (int) Math.floor((player.get_y() + player.get_height()/2)/tile_height);
+		if (dx > 0) {
+			int cur_tile_x = (int) Math.floor((player.get_x() + player.get_width())/tile_width);
+			int new_tile_x = (int) Math.floor((player.get_x() + dx + player.get_width())/tile_width);
+			
+			for (int t=cur_tile_x; t <= new_tile_x; t++) {
+				if (t > tiles.get_dim(1) - 1 || tiles.get_tile(t, cur_tile_y) != null) {
+					player.set_y(player.get_y() + player.get_v_y() * elapsed_time);
+					player.set_x(t * tile_width - player.get_width());
+					player.tile_collision_x();
+					collision = true;
+					break;
+				}
+					
+
+			}
+		}
+		else {
+			int cur_tile_x = (int) Math.floor((player.get_x())/tile_width);
+			int new_tile_x = (int) Math.floor((player.get_x() + dx)/tile_width);
+			
+			for (int t=cur_tile_x; t >= new_tile_x; t--) {
+				if (t < 0 || tiles.get_tile(t, cur_tile_y) != null) {
+					player.set_y(player.get_y() + player.get_v_y() * elapsed_time);
+					player.set_x((t + 1) * tile_width);
+					player.tile_collision_x();
+					collision = true;
+					break;
+				}
+					
+
+			}
+		}
+		/*
+		for (int i=Math.max(display_x_min/tile_width, 0); i < Math.min(display_x_max/tile_width, tiles.get_dim(1)); i++) 
 			for (int j = 0; j < tiles.get_dim(2); j++) { 
 				Image tile = tiles.get_tile(i, j);
 				if (tile != null) {
@@ -136,6 +208,13 @@ public class Game_manager {
 					
 				}
 			}
+		*/
+
+		//player.update_apply();
+		if (!collision) {
+			player.set_x(player.get_x() + dx);
+			player.set_y(player.get_y() + dy);
+		}
 		return false;
 	}
 	
@@ -144,17 +223,17 @@ public class Game_manager {
 			
 			@Override
 			public void key_typed() {
-				player.set_x_velocity(-0.5f);
+				player.set_v_x(-0.5f);
 			}
 			
 			@Override
 			public void key_released() {
-				player.set_x_velocity(0);
+				player.set_v_x(0);
 			}
 			
 			@Override
 			public void key_pressed() {
-				player.set_x_velocity(-0.5f);
+				player.set_v_x(-0.5f);
 			}
 		};
 
@@ -162,17 +241,17 @@ public class Game_manager {
 			
 			@Override
 			public void key_typed() {
-				player.set_x_velocity(0.5f);
+				player.set_v_x(0.5f);
 			}
 			
 			@Override
 			public void key_released() {
-				player.set_x_velocity(0);
+				player.set_v_x(0);
 			}
 			
 			@Override
 			public void key_pressed() {
-				player.set_x_velocity(0.5f);
+				player.set_v_x(0.5f);
 			}
 		};
 
@@ -180,12 +259,12 @@ public class Game_manager {
 			
 			@Override
 			public void key_typed() {
-				//player.set_y_velocity(-0.5f);
+				//player.set_v_y(-0.5f);
 			}
 			
 			@Override
 			public void key_released() {
-				//player.set_y_velocity(0);
+				//player.set_v_y(0);
 			}
 			
 			@Override
@@ -198,17 +277,17 @@ public class Game_manager {
 			
 			@Override
 			public void key_typed() {
-				player.set_y_velocity(0.5f);
+				player.set_v_y(0.5f);
 			}
 			
 			@Override
 			public void key_released() {
-				player.set_y_velocity(0);
+				player.set_v_y(0);
 			}
 			
 			@Override
 			public void key_pressed() {
-				player.set_y_velocity(0.5f);
+				player.set_v_y(0.5f);
 			}
 		};
 
@@ -263,15 +342,8 @@ public class Game_manager {
 		tile_height = images.get('A').getHeight(null);
 	}
 	
-	void update() {
-		int elapsed_time = 0;
-		long new_time = System.currentTimeMillis();
-		if (current_time != 0)
-			elapsed_time = (int) (new_time - current_time);
-		current_time = new_time;
-	
+	void update(int elapsed_time) {
 		player.update(elapsed_time);
-		player.update_apply();
 		
 		for (Sprite s: sprites) {
 			s.update(elapsed_time);
@@ -287,15 +359,24 @@ public class Game_manager {
 		g2d.drawImage(background, 0, 0, null);
 		
 		int player_x = (int) player.get_x();
-		display_x_min = Math.min(total_display_width - display_width, Math.max(0, player_x - display_width/2 - tile_width));
-		//int display_x_max = Math.min(tile_width * tiles[0].length, display_x_min + display_width + 2 * tile_width);
-		display_x_max = display_x_min + display_width + 2 * tile_width;
-		int offset = Math.min(total_display_width - display_width, Math.max(0, player_x - display_width/2));
+		display_x_min = Math.min(total_display_width - display_width, Math.max(0, player_x - display_width/2));
+		//display_x_max = display_x_min + display_width + 2 * tile_width;
+		display_x_max = display_x_min + display_width;
+		//int offset = Math.min(total_display_width - display_width, Math.max(0, player_x - display_width/2));
+		int offset;
+		if (player_x < display_width/2)
+			offset = 0;
+		else if (player_x > total_display_width - display_width/2)
+			//offset = display_width - (total_display_width - player_x);
+			offset = total_display_width - display_width;
+		else
+			offset = player_x - display_width/2;
+		
 		Sprite.set_display_x_offset(offset);
 
 		player.draw(g2d);
 		
-		for (int i=display_x_min/tile_width; i < display_x_max/tile_width; i++)
+		for (int i=Math.max(display_x_min/tile_width, 0); i <= Math.min(display_x_max/tile_width, tiles.get_dim(1)); i++)
 			for (int j = 0; j < tiles.get_dim(2); j++) {
 				//System.out.println(i +"  " + j);
 				g2d.drawImage(tiles.get_tile(i, j), i * tile_width - offset, j * tile_height, null);
