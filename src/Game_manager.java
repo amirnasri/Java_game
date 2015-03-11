@@ -1,22 +1,28 @@
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.Transparency;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import javax.imageio.ImageIO;
 import javax.swing.Timer;
 import javax.swing.ImageIcon;
 
 
 public class Game_manager {
 
-	private HashMap<Character, Image> images;
+	private HashMap<String, Image> images;
 	private LinkedList<Sprite> sprites;
 	private Tiles tiles;
 	private Player player;
@@ -33,7 +39,7 @@ public class Game_manager {
 	private int display_x_max;
 	long current_time;
 	
-	private final static int Timer_delay = 1;
+	private final static int Timer_delay = 10;
 	
 	private class Tiles {
 		private Image[][] tiles;
@@ -75,12 +81,12 @@ public class Game_manager {
 	}
 
 	Game_manager() throws IOException {
-		images = new HashMap<Character, Image>();
+		images = new HashMap<String, Image>();
 		sprites = new LinkedList<Sprite>();
-		load_images();
-		load_tile_map();
-
 		screen_manager = new Screen_manager();
+		load_images();
+		load_game_map();
+
 		total_display_width = tile_width * tiles.get_dim(1);
 		display_height = tile_height * tiles.get_dim(2);
 		display_width = display_height * 16 / 9;
@@ -297,7 +303,7 @@ public class Game_manager {
 		input_manager.register_key_action(action_down);
 	}
 	
-	public void load_tile_map() throws IOException {
+	public void load_game_map() throws IOException {
 
 		set_tile_dimension();
 		
@@ -321,10 +327,10 @@ public class Game_manager {
 			for (int i=0; i < line.length(); i++) {
 				char ch = line.charAt(i);
 				if (ch >= 'A' && ch <= 'H') {
-					tiles.set_tile(i, j, images.get(ch));
+					tiles.set_tile(i, j, images.get(Character.toString(ch)));
 				}
 				else {
-					Image image = images.get(ch);
+					Image image = images.get(Character.toString(ch));
 					if (image != null) {
 						Sprite sprite = new Sprite(i * tile_width, j * tile_height, -0.1f, 0, image);
 						sprites.add(sprite);
@@ -334,12 +340,12 @@ public class Game_manager {
 			}
 		}
 		
-		player = new Player(100, 100, 0, 0, images.get('p'));
+		player = new Player(100, 100, 0, 0, images.get("pl"));
 	}
 	
 	private void set_tile_dimension() {
-		tile_width = images.get('A').getWidth(null);
-		tile_height = images.get('A').getHeight(null);
+		tile_width = images.get("A").getWidth(null);
+		tile_height = images.get("A").getHeight(null);
 	}
 	
 	void update(int elapsed_time) {
@@ -355,7 +361,7 @@ public class Game_manager {
 		
 		Graphics2D g2d = screen_manager.get_graphics();
 		
-		Image background = images.get('b');
+		Image background = images.get("b");
 		g2d.drawImage(background, 0, 0, null);
 		
 		int player_x = (int) player.get_x();
@@ -388,20 +394,44 @@ public class Game_manager {
 		g2d.dispose();
 		screen_manager.show();
 	}
+
+	Image get_scaled_image(Image image, int x, int y) {
+		Image newImage = screen_manager.get_frame().getGraphicsConfiguration().createCompatibleImage(
+				image.getWidth(null),
+				image.getHeight(null),
+	            Transparency.BITMASK);
+		AffineTransform transform = new AffineTransform();
+		transform.scale(x, y);
+		transform.translate((x-1) * image.getWidth(null) / 2, (y-1) * image.getHeight(null) / 2);
+		
+        Graphics2D g = (Graphics2D)newImage.getGraphics();
+        g.drawImage(image, transform, null);
+        g.dispose();
+
+        return newImage;
+	}
 	
-	void load_images() {
+	void load_images() throws IOException {
 	
 		String image_path = "images/";
-		images.put('o', new ImageIcon(image_path + "star1.png").getImage());
-		images.put('1', new ImageIcon(image_path + "grub1.png").getImage());
-		images.put('2', new ImageIcon(image_path + "fly1.png").getImage());
-		images.put('*', new ImageIcon(image_path + "heart1.png").getImage());
-		images.put('!', new ImageIcon(image_path + "music1.png").getImage());
-		images.put('b', new ImageIcon(image_path + "background.png").getImage());
-		images.put('p', new ImageIcon(image_path + "player1.png").getImage());
+		images.put("o", new ImageIcon(image_path + "star1.png").getImage());
+		images.put("1", new ImageIcon(image_path + "grub1.png").getImage());
+		images.put("2", new ImageIcon(image_path + "fly1.png").getImage());
+		images.put("*", new ImageIcon(image_path + "heart1.png").getImage());
+		images.put("!", new ImageIcon(image_path + "music1.png").getImage());
+		images.put("b", new ImageIcon(image_path + "background.png").getImage());
+		//Image player_image = new ImageIcon(image_path + "mario.gif").getImage();
+		//Image player_image = Toolkit.getDefaultToolkit().createImage(image_path + "mario.gif");
+		Image player_image = ImageIO.read(new File(image_path + "mario.gif"));
+		images.put("pl", get_scaled_image(player_image, 1, 1));
+		//images.put("pl", player_image);
+        
+		//images.put('p', new ImageIcon(image_path + "mario.gif").getImage());
+		//images.put('p', new ImageIcon(image_path + "player1.png").getImage());
+        
 		
 		for (char ch = 'A'; ch <= 'I'; ch++) {
-			images.put(ch, new ImageIcon(image_path + "tile_" + ch + ".png").getImage());
+			images.put(Character.toString(ch), new ImageIcon(image_path + "tile_" + ch + ".png").getImage());
 		}
 		
 	}

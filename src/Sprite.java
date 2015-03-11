@@ -1,28 +1,28 @@
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.util.ArrayList;
 
 
-public class Sprite {
+public class Sprite extends Animation {
 	protected float x;
 	protected float y;
 	protected float v_x;
 	protected float v_y;
 	protected float x_new;
 	protected float y_new;
-	private Image image;
+	//private Image image;
 	private int image_width;
 	private int image_height;
 	private static int display_x_offset;
 	
-	public Sprite(int x, int y, float v_x, float v_y, Image image) {
+	public Sprite(int x, int y, float v_x, float v_y, ArrayList<Image> frame_list, ArrayList<Integer> frame_dur_list) {
+		super(frame_list, frame_dur_list);
 		this.x = x;
 		this.y = y;
 		this.v_x = v_x;
 		this.v_y = v_y;
-		this.image = image;
-		this.image_width = image.getWidth(null);
-		this.image_height = image.getHeight(null);
+		//this.image = image;
 	}
 	
 	public static void set_display_x_offset(int offset) {
@@ -78,13 +78,5 @@ public class Sprite {
 	public Rectangle get_bounding_box() {
 		//return new Rectangle(x + image_width/2, y + image_height/2, image_width, image_height);
 		return new Rectangle((int) x, (int) y, image_width, image_height);
-	}
-	
-	public float get_width() {
-		return image_width;
-	}
-
-	public float get_height() {
-		return image_height;
 	}
 }

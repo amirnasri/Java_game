@@ -16,14 +16,14 @@ public class Screen_manager {
 	private JFrame frame;
 	
 	Screen_manager() {
-	}
-
-	public void create_screen(int screen_width, int screen_height) {
 		frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setUndecorated(true);
         //frame.setIgnoreRepaint(true);
         //frame.setResizable(false);
+	}
+
+	public void create_screen(int screen_width, int screen_height) {
         frame.setSize(screen_width, screen_height);
 		
 		canvas = new Canvas();
@@ -40,7 +40,11 @@ public class Screen_manager {
 	public Graphics2D get_graphics() {
 		return (Graphics2D) canvas.getBufferStrategy().getDrawGraphics();
 	}
-	
+
+	public void set_screen_size(int screen_width, int screen_height) {
+		canvas.setPreferredSize(new Dimension(screen_width, screen_height));
+	}
+
 	public void show() {
 		canvas.getBufferStrategy().show();
         Toolkit.getDefaultToolkit().sync();
@@ -48,5 +52,9 @@ public class Screen_manager {
 	
 	public void register_key_listener(KeyListener key_listener) {
 		frame.addKeyListener(key_listener);
+	}
+	
+	public JFrame get_frame() {
+		return frame;
 	}
 }
