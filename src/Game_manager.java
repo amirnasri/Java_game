@@ -12,6 +12,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -120,7 +121,6 @@ public class Game_manager {
 			if (current_time != 0)
 				elapsed_time = (int) (new_time - current_time);
 			current_time = new_time;
-
 			update(elapsed_time);
 			check_collision(elapsed_time);
 			
@@ -321,6 +321,10 @@ public class Game_manager {
 		}
 		map_file.close();
 		
+		ArrayList<Integer> dur_list = new ArrayList<>();
+		
+		ArrayList<Image> image_list = new ArrayList<Image>();
+
 		tiles = new Tiles(max_line_length, lines.size());
 		for (int j=0; j < lines.size(); j++) {
 			line = lines.get(j);
@@ -330,17 +334,47 @@ public class Game_manager {
 					tiles.set_tile(i, j, images.get(Character.toString(ch)));
 				}
 				else {
-					Image image = images.get(Character.toString(ch));
-					if (image != null) {
-						Sprite sprite = new Sprite(i * tile_width, j * tile_height, -0.1f, 0, image);
-						sprites.add(sprite);
+					switch (ch) {
+					case 'f':
+						image_list = new ArrayList<Image>();
+						image_list.add(images.get("f1"));
+						image_list.add(images.get("f2"));
+						image_list.add(images.get("f3"));
+						dur_list = new ArrayList<>();
+						dur_list.add(50);
+						dur_list.add(50);
+						dur_list.add(50);
+						break;
+
+					case 'g':
+						image_list = new ArrayList<Image>();
+						image_list.add(images.get("g1"));
+						image_list.add(images.get("g2"));
+						dur_list = new ArrayList<>();
+						dur_list.add(100);
+						dur_list.add(100);
+						break;
+
+					default:
+						image_list = new ArrayList<Image>();
+						image_list.add(images.get(Character.toString(ch)));
+						dur_list = new ArrayList<>();
+						dur_list.add(50);
+						break;
 					}
+					
+					Sprite sprite = new Sprite(i * tile_width, j * tile_height, -0.1f, 0, image_list, dur_list);
+					sprites.add(sprite);
+
 					tiles.set_tile(i, j, null);
 				}
 			}
 		}
-		
-		player = new Player(100, 100, 0, 0, images.get("pl"));
+		image_list = new ArrayList<Image>();
+		image_list.add(images.get("pl"));
+		dur_list = new ArrayList<>();
+		dur_list.add(10);
+		player = new Player(100, 100, 0, 0, image_list, dur_list);
 	}
 	
 	private void set_tile_dimension() {
@@ -414,9 +448,12 @@ public class Game_manager {
 	void load_images() throws IOException {
 	
 		String image_path = "images/";
-		images.put("o", new ImageIcon(image_path + "star1.png").getImage());
-		images.put("1", new ImageIcon(image_path + "grub1.png").getImage());
-		images.put("2", new ImageIcon(image_path + "fly1.png").getImage());
+		images.put("s", new ImageIcon(image_path + "star1.png").getImage());
+		images.put("g1", new ImageIcon(image_path + "grub1.png").getImage());
+		images.put("g2", new ImageIcon(image_path + "grub2.png").getImage());
+		images.put("f1", new ImageIcon(image_path + "fly1.png").getImage());
+		images.put("f2", new ImageIcon(image_path + "fly2.png").getImage());
+		images.put("f3", new ImageIcon(image_path + "fly3.png").getImage());
 		images.put("*", new ImageIcon(image_path + "heart1.png").getImage());
 		images.put("!", new ImageIcon(image_path + "music1.png").getImage());
 		images.put("b", new ImageIcon(image_path + "background.png").getImage());

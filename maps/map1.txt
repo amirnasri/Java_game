@@ -3,18 +3,18 @@
 # The tiles are:
 #   (Space) Empty tile
 #   A..Z    Tiles A through Z
-#   o       Star
+#   s       Star
 #   !       Music Note
 #   *       Goal
-#   1       Bad Guy 1 (grub)
-#   2       Bad Guy 2 (fly)
+#   g       Bad Guy g (grub)
+#   f       Bad Guy f (fly)
                                                                  
-                                                           o     o
-                                                     o      o    o
-                       o o o        o o o       o     o      o 
-                      IIIIIII      IIIIIII       o     o         2
-                                                  o        2
-                                  2                 2EF
+                                                           s     s
+                                                     s      s    s
+                       s s s        s s s       s     s      s 
+                      IIIIIII      IIIIIII       s     s         f
+                                                  s        f
+                                  f                 fEF
                  EF                                 EGD
-        EF  1    CD       1           1            EGAD     *
+        EF  g    CD       g           g            EGAD     *
 BBBBBBBBGHBBBBBBBGHBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBGAAHBBBBBBBBBBB

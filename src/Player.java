@@ -1,19 +1,25 @@
 import java.awt.Image;
+import java.util.ArrayList;
 
 
 public class Player extends Sprite {
 	enum States {
 		NORMAL, ON_GROUND, IN_AIR, IDLE
 	}
+
+	private static final int ArrayList = 0;
+
+	private static final int Image = 0;
 	
 	private States state;
 	
-	public Player(int x, int y, float dx, float dy, Image image) {
-		super(x, y, dx, dy, image);
+	public Player(int x, int y, float v_x, float v_y, ArrayList<Image> frame_list, ArrayList<Integer> frame_dur_list) {
+		super(x, y, v_x, v_y, frame_list, frame_dur_list);
 		state = States.IN_AIR;
 	}
 
 	public void update(int elapsed_time) {
+		super.update(elapsed_time);
 		//if (state == States.IN_AIR) {
 		v_y = v_y + 0.1f;
 		//}

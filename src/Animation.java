@@ -20,9 +20,10 @@ public class Animation {
 			anim_acc_dur_list.add(acc_t);
 		}
 		frame_len = anim_acc_dur_list.size();
-		total_dur = anim_acc_dur_list.get(frame_len);
+		total_dur = anim_acc_dur_list.get(frame_len-1);
 		cur_time = 0;
 		frame_index = 0;
+		image = frame_list.get(frame_index);
 	}
 	
 	public void update(int elapsed_time) {

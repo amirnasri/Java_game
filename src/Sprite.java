@@ -30,6 +30,7 @@ public class Sprite extends Animation {
 	}
 
 	public void update(int elapsed_time) {
+		super.update(elapsed_time);
 		x_new = x + v_x * elapsed_time;
 		y_new = y + v_y * elapsed_time;
 	}
