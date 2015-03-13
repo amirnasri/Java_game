@@ -13,8 +13,8 @@ public class Player extends Sprite {
 	
 	private States state;
 	
-	public Player(int x, int y, float v_x, float v_y, ArrayList<Image> frame_list, ArrayList<Integer> frame_dur_list) {
-		super(x, y, v_x, v_y, frame_list, frame_dur_list);
+	public Player(int x, int y, float v_x, float v_y, Animation anim) {
+		super(x, y, v_x, v_y, anim);
 		state = States.IN_AIR;
 	}
 

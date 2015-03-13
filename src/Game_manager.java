@@ -20,7 +20,6 @@ import javax.imageio.ImageIO;
 import javax.swing.Timer;
 import javax.swing.ImageIcon;
 
-
 public class Game_manager {
 
 	private HashMap<String, Image> images;
@@ -31,7 +30,7 @@ public class Game_manager {
 	private Input_manager input_manager;
 	private int tile_width;
 	private int tile_height;
-	// Width of the entire game  
+	// Width of the entire game
 	private int total_display_width;
 	// Width and height of current game display
 	private int display_width;
@@ -39,33 +38,33 @@ public class Game_manager {
 	private int display_x_min;
 	private int display_x_max;
 	long current_time;
-	
+
 	private final static int Timer_delay = 10;
-	
+
 	private class Tiles {
 		private Image[][] tiles;
 		private int dim1;
 		private int dim2;
-		
+
 		Tiles(int dim1, int dim2) {
 			this.dim1 = dim1;
 			this.dim2 = dim2;
 			tiles = new Image[dim1][dim2];
 		}
-		
+
 		void set_tile(int i, int j, Image image) {
 			if (i < 0 || j < 0 || i >= dim1 || j >= dim2)
 				return;
 			tiles[i][j] = image;
 		}
-		
+
 		Image get_tile(int i, int j) {
 			if (i < 0 || j < 0 || i >= dim1 || j >= dim2)
 				return null;
-			
+
 			return tiles[i][j];
 		}
-		
+
 		int get_dim(int dim) {
 			if (dim == 1)
 				return dim1;
@@ -73,10 +72,9 @@ public class Game_manager {
 				return dim2;
 			return -1;
 		}
-	
+
 	}
-	
-	
+
 	public static void main(String[] args) throws IOException {
 		Game_manager gm = new Game_manager();
 	}
@@ -94,28 +92,24 @@ public class Game_manager {
 		screen_manager.create_screen(display_width, display_height);
 		input_manager = new Input_manager(screen_manager);
 		register_key_actions(input_manager);
-		
+
 		/*
-		ActionListener timer_listerner = new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				render_tile_map();	
-			}
-		};
-		
-		Timer timer = new Timer(Timer_delay, timer_listerner);
-		timer.start();
-		*/
+		 * ActionListener timer_listerner = new ActionListener() {
+		 * 
+		 * @Override public void actionPerformed(ActionEvent arg0) {
+		 * render_tile_map(); } };
+		 * 
+		 * Timer timer = new Timer(Timer_delay, timer_listerner); timer.start();
+		 */
 		current_time = 0;
 		game_loop();
 	}
 
 	void game_loop() {
-		
+
 		int elapsed_time = 0;
 		long new_time;
-		
+
 		while (true) {
 			new_time = System.currentTimeMillis();
 			if (current_time != 0)
@@ -123,156 +117,165 @@ public class Game_manager {
 			current_time = new_time;
 			update(elapsed_time);
 			check_collision(elapsed_time);
-			
+
 			render_display();
-						
-			
+
 			try {
 				Thread.sleep(Timer_delay);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
-		
+
 	}
-	
+
 	private boolean check_collision(int elapsed_time) {
-		
+
 		boolean collision = false;
-		
+
 		Rectangle player_bb = player.get_bounding_box();
-		
-		//check collision between the player and tiles
-		
+
+		// check collision between the player and tiles
+
 		float dy = player.get_v_y() * elapsed_time;
 		if (dy > 0) {
-			int cur_tile_x = (int) Math.floor((player.get_x() + player.get_width()/2)/tile_width);
-			int cur_tile_y = (int) Math.floor((player.get_y() + player.get_height())/tile_height);
+			int cur_tile_x = (int) Math.floor((player.get_x() + player
+					.get_width() / 2) / tile_width);
+			int cur_tile_y = (int) Math.floor((player.get_y() + player
+					.get_height()) / tile_height);
 
-			//int new_tile_x = (int) Math.floor((player.get_x_new() + player.get_width()/2)/tile_width);
-			int new_tile_y = (int) Math.floor((player.get_y() + dy + player.get_height())/tile_height);
-			
-			for (int t=cur_tile_y; t <= new_tile_y; t++) {
+			// int new_tile_x = (int) Math.floor((player.get_x_new() +
+			// player.get_width()/2)/tile_width);
+			int new_tile_y = (int) Math.floor((player.get_y() + dy + player
+					.get_height()) / tile_height);
+
+			for (int t = cur_tile_y; t <= new_tile_y; t++) {
 				if (tiles.get_tile(cur_tile_x, t) != null) {
-					player.set_x(player.get_x() + player.get_v_x() * elapsed_time);
+					player.set_x(player.get_x() + player.get_v_x()
+							* elapsed_time);
 					player.set_y(t * tile_height - player.get_height());
 					player.tile_collision_y();
 					collision = true;
 					break;
 				}
-					
 
 			}
 		}
 
 		float dx = player.get_v_x() * elapsed_time;
-		int cur_tile_y = (int) Math.floor((player.get_y() + player.get_height()/2)/tile_height);
+		int cur_tile_y = (int) Math
+				.floor((player.get_y() + player.get_height() / 2) / tile_height);
 		if (dx > 0) {
-			int cur_tile_x = (int) Math.floor((player.get_x() + player.get_width())/tile_width);
-			int new_tile_x = (int) Math.floor((player.get_x() + dx + player.get_width())/tile_width);
-			
-			for (int t=cur_tile_x; t <= new_tile_x; t++) {
-				if (t > tiles.get_dim(1) - 1 || tiles.get_tile(t, cur_tile_y) != null) {
-					player.set_y(player.get_y() + player.get_v_y() * elapsed_time);
+			int cur_tile_x = (int) Math.floor((player.get_x() + player
+					.get_width()) / tile_width);
+			int new_tile_x = (int) Math.floor((player.get_x() + dx + player
+					.get_width()) / tile_width);
+
+			for (int t = cur_tile_x; t <= new_tile_x; t++) {
+				if (t > tiles.get_dim(1) - 1
+						|| tiles.get_tile(t, cur_tile_y) != null) {
+					player.set_y(player.get_y() + player.get_v_y()
+							* elapsed_time);
 					player.set_x(t * tile_width - player.get_width());
 					player.tile_collision_x();
 					collision = true;
 					break;
 				}
-					
 
 			}
-		}
-		else {
-			int cur_tile_x = (int) Math.floor((player.get_x())/tile_width);
-			int new_tile_x = (int) Math.floor((player.get_x() + dx)/tile_width);
-			
-			for (int t=cur_tile_x; t >= new_tile_x; t--) {
+		} else {
+			int cur_tile_x = (int) Math.floor((player.get_x()) / tile_width);
+			int new_tile_x = (int) Math.floor((player.get_x() + dx)
+					/ tile_width);
+
+			for (int t = cur_tile_x; t >= new_tile_x; t--) {
 				if (t < 0 || tiles.get_tile(t, cur_tile_y) != null) {
-					player.set_y(player.get_y() + player.get_v_y() * elapsed_time);
+					player.set_y(player.get_y() + player.get_v_y()
+							* elapsed_time);
 					player.set_x((t + 1) * tile_width);
 					player.tile_collision_x();
 					collision = true;
 					break;
 				}
-					
 
 			}
 		}
 		/*
-		for (int i=Math.max(display_x_min/tile_width, 0); i < Math.min(display_x_max/tile_width, tiles.get_dim(1)); i++) 
-			for (int j = 0; j < tiles.get_dim(2); j++) { 
-				Image tile = tiles.get_tile(i, j);
-				if (tile != null) {
-					Rectangle tile_bounding_box = new Rectangle((int) i * tile.getWidth(null), (int) j * tile.getHeight(null), tile.getWidth(null), tile.getHeight(null));
-					
-					if (player_bb.intersects(tile_bounding_box)) {
-						//System.out.println("Collision!!!!!");
-						player.tile_collision();
-						return true;
-					}
-					
-				}
-			}
-		*/
+		 * for (int i=Math.max(display_x_min/tile_width, 0); i <
+		 * Math.min(display_x_max/tile_width, tiles.get_dim(1)); i++) for (int j
+		 * = 0; j < tiles.get_dim(2); j++) { Image tile = tiles.get_tile(i, j);
+		 * if (tile != null) { Rectangle tile_bounding_box = new Rectangle((int)
+		 * i * tile.getWidth(null), (int) j * tile.getHeight(null),
+		 * tile.getWidth(null), tile.getHeight(null));
+		 * 
+		 * if (player_bb.intersects(tile_bounding_box)) {
+		 * //System.out.println("Collision!!!!!"); player.tile_collision();
+		 * return true; }
+		 * 
+		 * } }
+		 */
 
-		//player.update_apply();
+		// player.update_apply();
 		if (!collision) {
 			player.set_x(player.get_x() + dx);
 			player.set_y(player.get_y() + dy);
 		}
 		return false;
 	}
-	
+
 	private void register_key_actions(Input_manager input_manager) {
 		Key_action action_left = new Key_action("action_left", KeyEvent.VK_LEFT) {
-			
+
 			@Override
 			public void key_typed() {
 				player.set_v_x(-0.5f);
 			}
-			
+
 			@Override
 			public void key_released() {
 				player.set_v_x(0);
 			}
-			
+
 			@Override
 			public void key_pressed() {
 				player.set_v_x(-0.5f);
 			}
 		};
 
-		Key_action action_right = new Key_action("action_right", KeyEvent.VK_RIGHT) {
-			
+		Key_action action_right = new Key_action("action_right",
+				KeyEvent.VK_RIGHT) {
+
 			@Override
 			public void key_typed() {
+				System.out.println("typed");
 				player.set_v_x(0.5f);
 			}
-			
+
 			@Override
 			public void key_released() {
+				System.out.println("released");
 				player.set_v_x(0);
 			}
-			
+
 			@Override
 			public void key_pressed() {
+				System.out.println("pressed");
 				player.set_v_x(0.5f);
 			}
 		};
 
 		Key_action action_up = new Key_action("action_up", KeyEvent.VK_UP) {
-			
+
 			@Override
 			public void key_typed() {
-				//player.set_v_y(-0.5f);
+				// player.set_v_y(-0.5f);
 			}
-			
+
 			@Override
 			public void key_released() {
-				//player.set_v_y(0);
+				// player.set_v_y(0);
 			}
-			
+
 			@Override
 			public void key_pressed() {
 				player.jump();
@@ -280,17 +283,17 @@ public class Game_manager {
 		};
 
 		Key_action action_down = new Key_action("action_down", KeyEvent.VK_DOWN) {
-			
+
 			@Override
 			public void key_typed() {
 				player.set_v_y(0.5f);
 			}
-			
+
 			@Override
 			public void key_released() {
 				player.set_v_y(0);
 			}
-			
+
 			@Override
 			public void key_pressed() {
 				player.set_v_y(0.5f);
@@ -302,12 +305,13 @@ public class Game_manager {
 		input_manager.register_key_action(action_up);
 		input_manager.register_key_action(action_down);
 	}
-	
+
 	public void load_game_map() throws IOException {
 
 		set_tile_dimension();
-		
-		BufferedReader map_file = new BufferedReader(new FileReader("maps/map1.txt"));
+
+		BufferedReader map_file = new BufferedReader(new FileReader(
+				"maps/map1.txt"));
 		String line;
 		LinkedList<String> lines = new LinkedList<String>();
 		int max_line_length = 0;
@@ -317,136 +321,123 @@ public class Game_manager {
 				continue;
 			lines.add(line);
 			if (line.length() > max_line_length)
-				max_line_length = line.length();  
+				max_line_length = line.length();
 		}
 		map_file.close();
-		
-		ArrayList<Integer> dur_list = new ArrayList<>();
-		
-		ArrayList<Image> image_list = new ArrayList<Image>();
 
 		tiles = new Tiles(max_line_length, lines.size());
-		for (int j=0; j < lines.size(); j++) {
+		for (int j = 0; j < lines.size(); j++) {
 			line = lines.get(j);
-			for (int i=0; i < line.length(); i++) {
+			for (int i = 0; i < line.length(); i++) {
 				char ch = line.charAt(i);
 				if (ch >= 'A' && ch <= 'H') {
 					tiles.set_tile(i, j, images.get(Character.toString(ch)));
-				}
-				else {
+				} else {
+					Animation anim;
 					switch (ch) {
 					case 'f':
-						image_list = new ArrayList<Image>();
-						image_list.add(images.get("f1"));
-						image_list.add(images.get("f2"));
-						image_list.add(images.get("f3"));
-						dur_list = new ArrayList<>();
-						dur_list.add(50);
-						dur_list.add(50);
-						dur_list.add(50);
+						anim = get_anim("fly");
 						break;
 
 					case 'g':
-						image_list = new ArrayList<Image>();
-						image_list.add(images.get("g1"));
-						image_list.add(images.get("g2"));
-						dur_list = new ArrayList<>();
-						dur_list.add(100);
-						dur_list.add(100);
+						anim = get_anim("grub");
 						break;
 
 					default:
-						image_list = new ArrayList<Image>();
-						image_list.add(images.get(Character.toString(ch)));
-						dur_list = new ArrayList<>();
-						dur_list.add(50);
+						anim = get_anim(Character.toString(ch));
 						break;
 					}
-					
-					Sprite sprite = new Sprite(i * tile_width, j * tile_height, -0.1f, 0, image_list, dur_list);
+
+					Sprite sprite = new Sprite(i * tile_width, j * tile_height,
+							-0.1f, 0, anim);
 					sprites.add(sprite);
 
 					tiles.set_tile(i, j, null);
 				}
 			}
 		}
-		image_list = new ArrayList<Image>();
-		image_list.add(images.get("pl"));
-		dur_list = new ArrayList<>();
-		dur_list.add(10);
-		player = new Player(100, 100, 0, 0, image_list, dur_list);
+
+		player = new Player(100, 100, 0, 0, get_anim("mario_run"));
 	}
-	
+
 	private void set_tile_dimension() {
 		tile_width = images.get("A").getWidth(null);
 		tile_height = images.get("A").getHeight(null);
 	}
-	
+
 	void update(int elapsed_time) {
 		player.update(elapsed_time);
-		
-		for (Sprite s: sprites) {
+
+		for (Sprite s : sprites) {
 			s.update(elapsed_time);
 			s.update_apply();
 		}
 	}
 
 	void render_display() {
-		
+
 		Graphics2D g2d = screen_manager.get_graphics();
-		
+
 		Image background = images.get("b");
 		g2d.drawImage(background, 0, 0, null);
-		
+
 		int player_x = (int) player.get_x();
-		display_x_min = Math.min(total_display_width - display_width, Math.max(0, player_x - display_width/2));
-		//display_x_max = display_x_min + display_width + 2 * tile_width;
+		display_x_min = Math.min(total_display_width - display_width,
+				Math.max(0, player_x - display_width / 2));
+		// display_x_max = display_x_min + display_width + 2 * tile_width;
 		display_x_max = display_x_min + display_width;
-		//int offset = Math.min(total_display_width - display_width, Math.max(0, player_x - display_width/2));
+		// int offset = Math.min(total_display_width - display_width,
+		// Math.max(0, player_x - display_width/2));
 		int offset;
-		if (player_x < display_width/2)
+		if (player_x < display_width / 2)
 			offset = 0;
-		else if (player_x > total_display_width - display_width/2)
-			//offset = display_width - (total_display_width - player_x);
+		else if (player_x > total_display_width - display_width / 2)
+			// offset = display_width - (total_display_width - player_x);
 			offset = total_display_width - display_width;
 		else
-			offset = player_x - display_width/2;
-		
+			offset = player_x - display_width / 2;
+
 		Sprite.set_display_x_offset(offset);
 
 		player.draw(g2d);
-		
-		for (int i=Math.max(display_x_min/tile_width, 0); i <= Math.min(display_x_max/tile_width, tiles.get_dim(1)); i++)
+
+		for (int i = Math.max(display_x_min / tile_width, 0); i <= Math.min(
+				display_x_max / tile_width, tiles.get_dim(1)); i++)
 			for (int j = 0; j < tiles.get_dim(2); j++) {
-				//System.out.println(i +"  " + j);
-				g2d.drawImage(tiles.get_tile(i, j), i * tile_width - offset, j * tile_height, null);
+				// System.out.println(i +"  " + j);
+				g2d.drawImage(tiles.get_tile(i, j), i * tile_width - offset, j
+						* tile_height, null);
 			}
-		
-		for (Sprite s: sprites)
+
+		for (Sprite s : sprites)
 			s.draw(g2d);
-		
+
 		g2d.dispose();
 		screen_manager.show();
 	}
 
-	Image get_scaled_image(Image image, int x, int y) {
-		Image newImage = screen_manager.get_frame().getGraphicsConfiguration().createCompatibleImage(
-				image.getWidth(null),
-				image.getHeight(null),
-	            Transparency.BITMASK);
+	Image get_scaled_image(Image image, float x, float y) {
+		Image newImage = screen_manager
+				.get_frame()
+				.getGraphicsConfiguration()
+				.createCompatibleImage(
+						(int) Math.abs(x) * image.getWidth(null),
+						(int) Math.abs(y) * image.getHeight(null),
+						Transparency.BITMASK);
 		AffineTransform transform = new AffineTransform();
 		transform.scale(x, y);
-		transform.translate((x-1) * image.getWidth(null) / 2, (y-1) * image.getHeight(null) / 2);
-		
-        Graphics2D g = (Graphics2D)newImage.getGraphics();
-        g.drawImage(image, transform, null);
-        g.dispose();
+		// transform.translate((x-1) * image.getWidth(null) / 2, (y-1) *
+		// image.getHeight(null) / 2);
 
-        return newImage;
+		Graphics2D g = (Graphics2D) newImage.getGraphics();
+		g.drawImage(image, transform, null);
+		g.dispose();
+
+		return newImage;
 	}
-	
+
 	void load_images() throws IOException {
-	
+
 		String image_path = "images/";
 		images.put("s", new ImageIcon(image_path + "star1.png").getImage());
 		images.put("g1", new ImageIcon(image_path + "grub1.png").getImage());
@@ -457,19 +448,87 @@ public class Game_manager {
 		images.put("*", new ImageIcon(image_path + "heart1.png").getImage());
 		images.put("!", new ImageIcon(image_path + "music1.png").getImage());
 		images.put("b", new ImageIcon(image_path + "background.png").getImage());
-		//Image player_image = new ImageIcon(image_path + "mario.gif").getImage();
-		//Image player_image = Toolkit.getDefaultToolkit().createImage(image_path + "mario.gif");
-		Image player_image = ImageIO.read(new File(image_path + "mario.gif"));
-		images.put("pl", get_scaled_image(player_image, 1, 1));
-		//images.put("pl", player_image);
-        
-		//images.put('p', new ImageIcon(image_path + "mario.gif").getImage());
-		//images.put('p', new ImageIcon(image_path + "player1.png").getImage());
-        
-		
+		// Image player_image = new ImageIcon(image_path +
+		// "mario.gif").getImage();
+		// Image player_image =
+		// Toolkit.getDefaultToolkit().createImage(image_path + "mario.gif");
+		// Image player_image = ImageIO.read(new File(image_path +
+		// "Mario_Big_Right_Still.png"));
+
+		images.put(
+				"mrs",
+				get_scaled_image(new ImageIcon(image_path
+						+ "Mario_Big_Right_Still.png").getImage(), 3, 3));
+		images.put(
+				"mr1",
+				get_scaled_image(new ImageIcon(image_path
+						+ "Mario_Big_Right_1.png").getImage(), 3, 3));
+		images.put(
+				"mr2",
+				get_scaled_image(new ImageIcon(image_path
+						+ "Mario_Big_Right_2.png").getImage(), 3, 3));
+		images.put(
+				"mls",
+				get_scaled_image(new ImageIcon(image_path
+						+ "Mario_Big_Right_Still.png").getImage(), -3, 3));
+		images.put(
+				"ml1",
+				get_scaled_image(new ImageIcon(image_path
+						+ "Mario_Big_Right_1.png").getImage(), -3, 3));
+		images.put(
+				"ml2",
+				get_scaled_image(new ImageIcon(image_path
+						+ "Mario_Big_Right_2.png").getImage(), -3, 3));
+		// images.put("pl", player_image);
+
+		// images.put('p', new ImageIcon(image_path + "mario.gif").getImage());
+		// images.put('p', new ImageIcon(image_path +
+		// "player1.png").getImage());
+
 		for (char ch = 'A'; ch <= 'I'; ch++) {
-			images.put(Character.toString(ch), new ImageIcon(image_path + "tile_" + ch + ".png").getImage());
+			images.put(Character.toString(ch), new ImageIcon(image_path
+					+ "tile_" + ch + ".png").getImage());
 		}
-		
+
+	}
+
+	private Animation get_anim(String anim_name) {
+
+		ArrayList<Integer> dur_list = new ArrayList<>();
+		ArrayList<Image> image_list = new ArrayList<Image>();
+		switch (anim_name) {
+		case "fly":
+			image_list = new ArrayList<Image>();
+			image_list.add(images.get("f1"));
+			image_list.add(images.get("f2"));
+			image_list.add(images.get("f3"));
+			dur_list = new ArrayList<>();
+			dur_list.add(50);
+			dur_list.add(50);
+			dur_list.add(50);
+			break;
+		case "grub":
+			image_list = new ArrayList<Image>();
+			image_list.add(images.get("g1"));
+			image_list.add(images.get("g2"));
+			dur_list = new ArrayList<>();
+			dur_list.add(100);
+			dur_list.add(100);
+			break;
+		case "mario_run":
+			image_list = new ArrayList<Image>();
+			image_list.add(images.get("mr1"));
+			image_list.add(images.get("mr2"));
+			dur_list = new ArrayList<>();
+			dur_list.add(200);
+			dur_list.add(200);
+			break;
+		default:
+			image_list = new ArrayList<Image>();
+			image_list.add(images.get(anim_name));
+			dur_list = new ArrayList<>();
+			dur_list.add(50);
+		}
+		return new Animation(image_list, dur_list);
 	}
 }

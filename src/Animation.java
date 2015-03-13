@@ -11,19 +11,8 @@ public class Animation {
 	private int frame_len;
 	protected Image image;
 	
-	public Animation(ArrayList<Image> frame_list, ArrayList<Integer> frame_dur_list) {
-		this.frame_list = frame_list;
-		int acc_t = 0;
-		anim_acc_dur_list = new ArrayList<>();
-		for (int t: frame_dur_list) {
-			acc_t += t;
-			anim_acc_dur_list.add(acc_t);
-		}
-		frame_len = anim_acc_dur_list.size();
-		total_dur = anim_acc_dur_list.get(frame_len-1);
-		cur_time = 0;
-		frame_index = 0;
-		image = frame_list.get(frame_index);
+	public Animation(ArrayList<Image> frame_list, ArrayList<Integer> dur_list) {
+		set_anim(frame_list, dur_list);
 	}
 	
 	public void update(int elapsed_time) {
@@ -50,4 +39,18 @@ public class Animation {
 		return image.getHeight(null);
 	}
 
+	public void set_anim(ArrayList<Image> frame_list, ArrayList<Integer> dur_list) {
+		this.frame_list = frame_list;
+		int acc_t = 0;
+		anim_acc_dur_list = new ArrayList<>();
+		for (int t: dur_list) {
+			acc_t += t;
+			anim_acc_dur_list.add(acc_t);
+		}
+		frame_len = anim_acc_dur_list.size();
+		total_dur = anim_acc_dur_list.get(frame_len-1);
+		cur_time = 0;
+		frame_index = 0;
+		image = frame_list.get(frame_index);
+	}
 }
