@@ -22,12 +22,12 @@ import javax.swing.ImageIcon;
 
 public class Game_manager {
 
-	private HashMap<String, Image> images;
 	private LinkedList<Sprite> sprites;
 	private Tiles tiles;
 	private Player player;
 	private Screen_manager screen_manager;
 	private Input_manager input_manager;
+	private Resource_manager res_manager;
 	private int tile_width;
 	private int tile_height;
 	// Width of the entire game
@@ -80,15 +80,17 @@ public class Game_manager {
 	}
 
 	Game_manager() throws IOException {
-		images = new HashMap<String, Image>();
 		sprites = new LinkedList<Sprite>();
 		screen_manager = new Screen_manager();
-		load_images();
+		res_manager = new Resource_manager(screen_manager);
+		//load_images();
 		load_game_map();
 
 		total_display_width = tile_width * tiles.get_dim(1);
 		display_height = tile_height * tiles.get_dim(2);
 		display_width = display_height * 16 / 9;
+		System.out.println(display_width);
+		System.out.println(display_height);
 		screen_manager.create_screen(display_width, display_height);
 		input_manager = new Input_manager(screen_manager);
 		register_key_actions(input_manager);
@@ -227,11 +229,6 @@ public class Game_manager {
 		Key_action action_left = new Key_action("action_left", KeyEvent.VK_LEFT) {
 
 			@Override
-			public void key_typed() {
-				player.set_v_x(-0.5f);
-			}
-
-			@Override
 			public void key_released() {
 				player.set_v_x(0);
 			}
@@ -242,34 +239,20 @@ public class Game_manager {
 			}
 		};
 
-		Key_action action_right = new Key_action("action_right",
-				KeyEvent.VK_RIGHT) {
-
-			@Override
-			public void key_typed() {
-				System.out.println("typed");
-				player.set_v_x(0.5f);
-			}
+		Key_action action_right = new Key_action("action_right", KeyEvent.VK_RIGHT) {
 
 			@Override
 			public void key_released() {
-				System.out.println("released");
 				player.set_v_x(0);
 			}
 
 			@Override
 			public void key_pressed() {
-				System.out.println("pressed");
 				player.set_v_x(0.5f);
 			}
 		};
 
 		Key_action action_up = new Key_action("action_up", KeyEvent.VK_UP) {
-
-			@Override
-			public void key_typed() {
-				// player.set_v_y(-0.5f);
-			}
 
 			@Override
 			public void key_released() {
@@ -283,11 +266,6 @@ public class Game_manager {
 		};
 
 		Key_action action_down = new Key_action("action_down", KeyEvent.VK_DOWN) {
-
-			@Override
-			public void key_typed() {
-				player.set_v_y(0.5f);
-			}
 
 			@Override
 			public void key_released() {
@@ -331,7 +309,7 @@ public class Game_manager {
 			for (int i = 0; i < line.length(); i++) {
 				char ch = line.charAt(i);
 				if (ch >= 'A' && ch <= 'H') {
-					tiles.set_tile(i, j, images.get(Character.toString(ch)));
+					tiles.set_tile(i, j, res_manager.get_image(Character.toString(ch)));
 				} else {
 					Animation anim;
 					switch (ch) {
@@ -357,12 +335,12 @@ public class Game_manager {
 			}
 		}
 
-		player = new Player(100, 100, 0, 0, get_anim("mario_run"));
+		player = new Player(100, 100, 0, 0, get_anim("mario_run"), res_manager);
 	}
 
 	private void set_tile_dimension() {
-		tile_width = images.get("A").getWidth(null);
-		tile_height = images.get("A").getHeight(null);
+		tile_width = res_manager.get_image("A").getWidth(null);
+		tile_height = res_manager.get_image("A").getHeight(null);
 	}
 
 	void update(int elapsed_time) {
@@ -378,7 +356,7 @@ public class Game_manager {
 
 		Graphics2D g2d = screen_manager.get_graphics();
 
-		Image background = images.get("b");
+		Image background = res_manager.get_image("b");
 		g2d.drawImage(background, 0, 0, null);
 
 		int player_x = (int) player.get_x();
@@ -415,93 +393,17 @@ public class Game_manager {
 		g2d.dispose();
 		screen_manager.show();
 	}
-
-	Image get_scaled_image(Image image, float x, float y) {
-		Image newImage = screen_manager
-				.get_frame()
-				.getGraphicsConfiguration()
-				.createCompatibleImage(
-						(int) Math.abs(x) * image.getWidth(null),
-						(int) Math.abs(y) * image.getHeight(null),
-						Transparency.BITMASK);
-		AffineTransform transform = new AffineTransform();
-		transform.scale(x, y);
-		// transform.translate((x-1) * image.getWidth(null) / 2, (y-1) *
-		// image.getHeight(null) / 2);
-
-		Graphics2D g = (Graphics2D) newImage.getGraphics();
-		g.drawImage(image, transform, null);
-		g.dispose();
-
-		return newImage;
-	}
-
-	void load_images() throws IOException {
-
-		String image_path = "images/";
-		images.put("s", new ImageIcon(image_path + "star1.png").getImage());
-		images.put("g1", new ImageIcon(image_path + "grub1.png").getImage());
-		images.put("g2", new ImageIcon(image_path + "grub2.png").getImage());
-		images.put("f1", new ImageIcon(image_path + "fly1.png").getImage());
-		images.put("f2", new ImageIcon(image_path + "fly2.png").getImage());
-		images.put("f3", new ImageIcon(image_path + "fly3.png").getImage());
-		images.put("*", new ImageIcon(image_path + "heart1.png").getImage());
-		images.put("!", new ImageIcon(image_path + "music1.png").getImage());
-		images.put("b", new ImageIcon(image_path + "background.png").getImage());
-		// Image player_image = new ImageIcon(image_path +
-		// "mario.gif").getImage();
-		// Image player_image =
-		// Toolkit.getDefaultToolkit().createImage(image_path + "mario.gif");
-		// Image player_image = ImageIO.read(new File(image_path +
-		// "Mario_Big_Right_Still.png"));
-
-		images.put(
-				"mrs",
-				get_scaled_image(new ImageIcon(image_path
-						+ "Mario_Big_Right_Still.png").getImage(), 3, 3));
-		images.put(
-				"mr1",
-				get_scaled_image(new ImageIcon(image_path
-						+ "Mario_Big_Right_1.png").getImage(), 3, 3));
-		images.put(
-				"mr2",
-				get_scaled_image(new ImageIcon(image_path
-						+ "Mario_Big_Right_2.png").getImage(), 3, 3));
-		images.put(
-				"mls",
-				get_scaled_image(new ImageIcon(image_path
-						+ "Mario_Big_Right_Still.png").getImage(), -3, 3));
-		images.put(
-				"ml1",
-				get_scaled_image(new ImageIcon(image_path
-						+ "Mario_Big_Right_1.png").getImage(), -3, 3));
-		images.put(
-				"ml2",
-				get_scaled_image(new ImageIcon(image_path
-						+ "Mario_Big_Right_2.png").getImage(), -3, 3));
-		// images.put("pl", player_image);
-
-		// images.put('p', new ImageIcon(image_path + "mario.gif").getImage());
-		// images.put('p', new ImageIcon(image_path +
-		// "player1.png").getImage());
-
-		for (char ch = 'A'; ch <= 'I'; ch++) {
-			images.put(Character.toString(ch), new ImageIcon(image_path
-					+ "tile_" + ch + ".png").getImage());
-		}
-
-	}
-
+	
 	private Animation get_anim(String anim_name) {
 
-		ArrayList<Integer> dur_list = new ArrayList<>();
-		ArrayList<Image> image_list = new ArrayList<Image>();
+		ArrayList<Integer> dur_list;
+		ArrayList<Image> image_list;
 		switch (anim_name) {
 		case "fly":
 			image_list = new ArrayList<Image>();
-			image_list.add(images.get("f1"));
-			image_list.add(images.get("f2"));
-			image_list.add(images.get("f3"));
+			image_list.add(res_manager.get_image("f1"));
+			image_list.add(res_manager.get_image("f2"));
+			image_list.add(res_manager.get_image("f3"));
 			dur_list = new ArrayList<>();
 			dur_list.add(50);
 			dur_list.add(50);
@@ -509,23 +411,23 @@ public class Game_manager {
 			break;
 		case "grub":
 			image_list = new ArrayList<Image>();
-			image_list.add(images.get("g1"));
-			image_list.add(images.get("g2"));
+			image_list.add(res_manager.get_image("g1"));
+			image_list.add(res_manager.get_image("g2"));
 			dur_list = new ArrayList<>();
 			dur_list.add(100);
 			dur_list.add(100);
 			break;
 		case "mario_run":
 			image_list = new ArrayList<Image>();
-			image_list.add(images.get("mr1"));
-			image_list.add(images.get("mr2"));
+			image_list.add(res_manager.get_image("mr1"));
+			image_list.add(res_manager.get_image("mr2"));
 			dur_list = new ArrayList<>();
 			dur_list.add(200);
 			dur_list.add(200);
 			break;
 		default:
 			image_list = new ArrayList<Image>();
-			image_list.add(images.get(anim_name));
+			image_list.add(res_manager.get_image(anim_name));
 			dur_list = new ArrayList<>();
 			dur_list.add(50);
 		}

@@ -13,7 +13,6 @@ public abstract class Key_action {
 		return key_id;
 	}
 	
-	public abstract void key_typed();
 	public abstract void key_pressed();
 	public abstract void key_released();
 }

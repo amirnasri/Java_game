@@ -8,13 +8,28 @@ public class Player extends Sprite {
 	}
 
 	private static final int ArrayList = 0;
-
 	private static final int Image = 0;
-	
 	private States state;
+	private int dir = 1;
+	private Resource_manager res_manager;
+	private ArrayList<Integer> dur_list = new ArrayList<>();
+	private ArrayList<Image> image_list_left = new ArrayList<Image>();
+	private ArrayList<Image> image_list_right = new ArrayList<Image>();
+
 	
-	public Player(int x, int y, float v_x, float v_y, Animation anim) {
+	public Player(int x, int y, float v_x, float v_y, Animation anim, Resource_manager rm) {
 		super(x, y, v_x, v_y, anim);
+		this.res_manager = rm;
+
+		dur_list.add(200);
+		dur_list.add(200);
+		
+		image_list_left.add(res_manager.get_image("ml1"));
+		image_list_left.add(res_manager.get_image("ml2"));
+
+		image_list_right.add(res_manager.get_image("mr1"));
+		image_list_right.add(res_manager.get_image("mr2"));
+
 		state = States.IN_AIR;
 	}
 
@@ -36,6 +51,20 @@ public class Player extends Sprite {
 			v_y = 0;
 			state = States.ON_GROUND;
 		}
+	}
+
+	public void set_v_x(float v_x) {
+		if (Math.signum(dir) != Math.signum(v_x)) {
+			dir = (int) (-1 * Math.signum(v_x));
+			if (dir < 0) {
+				set_anim(new Animation(image_list_left, dur_list));
+			}
+			else {
+				set_anim(new Animation(image_list_right, dur_list));
+			}
+		}
+
+		super.set_v_x(v_x);
 	}
 
 	public void jump() {

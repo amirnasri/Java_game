@@ -12,9 +12,6 @@ public class Input_manager {
 			
 			@Override
 			public void keyTyped(KeyEvent key_event) {
-				Key_action key_action = key_action_array[key_event.getKeyCode()];  
-				if (key_action != null)
-					key_action.key_typed();
 			}
 			
 			@Override

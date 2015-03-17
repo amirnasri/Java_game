@@ -25,6 +25,10 @@ public class Sprite {
 		this.anim = anim;
 	}
 	
+	public void set_anim(Animation anim) {
+		this.anim = anim;
+	}
+	
 	public static void set_display_x_offset(int offset) {
 		display_x_offset = offset;	
 	}

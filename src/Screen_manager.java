@@ -17,7 +17,7 @@ public class Screen_manager {
 	
 	Screen_manager() {
 		frame = new JFrame();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+       frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setUndecorated(true);
         //frame.setIgnoreRepaint(true);
         //frame.setResizable(false);
