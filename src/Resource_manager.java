@@ -37,15 +37,15 @@ public class Resource_manager {
 		// Image player_image = ImageIO.read(new File(image_path +
 		// "Mario_Big_Right_Still.png"));
 
-		images.put("mrs", get_scaled_image(new ImageIcon(image_path	+ "Mario_Big_Right_Still.png").getImage(), 2, 2));
-		images.put("ml1", get_scaled_image(new ImageIcon(image_path	+ "Mario_Big_Right_1.png").getImage(), 2, 2));
-		images.put("ml2", get_scaled_image(new ImageIcon(image_path	+ "Mario_Big_Right_2.png").getImage(), 2, 2));
+		images.put("mrs", get_scaled_image(new ImageIcon(image_path	+ "Mario_Big_Right_Still.png").getImage(), 3, 3));
+		images.put("ml1", get_scaled_image(new ImageIcon(image_path	+ "Mario_Big_Right_1.png").getImage(), 3, 3));
+		images.put("ml2", get_scaled_image(new ImageIcon(image_path	+ "Mario_Big_Right_2.png").getImage(), 3, 3));
 		images.put(
 				"mls",
 				get_scaled_image(new ImageIcon(image_path
-						+ "Mario_Big_Right_Still.png").getImage(), -1, 1));
-		images.put("mr1", get_scaled_image(new ImageIcon(image_path + "Mario_Big_Right_1.png").getImage(), -2, 2));
-		images.put("mr2", get_scaled_image(new ImageIcon(image_path	+ "Mario_Big_Right_2.png").getImage(), -2, 2));
+						+ "Mario_Big_Right_Still.png").getImage(), -3, 3));
+		images.put("mr1", get_scaled_image(new ImageIcon(image_path + "Mario_Big_Right_1.png").getImage(), -3, 3));
+		images.put("mr2", get_scaled_image(new ImageIcon(image_path	+ "Mario_Big_Right_2.png").getImage(), -3, 3));
 		// images.put("pl", player_image);
 
 		// images.put('p', new ImageIcon(image_path + "mario.gif").getImage());
@@ -75,7 +75,9 @@ public class Resource_manager {
 		transform.scale(x, y);
 		//transform.translate((x-1) * image.getWidth(null) / 2, (y-1) *
 		// image.getHeight(null) / 2);
-		transform.translate((x-2) * image.getWidth(null), (y-2) * image.getHeight(null));
+		if (x < 0) {
+			transform.translate(-image.getWidth(null), 0);
+		}
 		Graphics2D g = (Graphics2D) newImage.getGraphics();
 		g.drawImage(image, transform, null);
 		g.dispose();
