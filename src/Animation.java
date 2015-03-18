@@ -16,15 +16,23 @@ public class Animation {
 	}
 	
 	public void update(int elapsed_time) {
+		System.out.println("cur_time: " + cur_time);
+		System.out.println("elapsed: " + elapsed_time);
 		cur_time += elapsed_time;
+		System.out.println("cur_time: " + cur_time);
+		System.out.println("get: " + anim_acc_dur_list.get(frame_index));
+		System.out.println("total: " + total_dur);
+
 		if (cur_time >= anim_acc_dur_list.get(frame_index)) {
 			frame_index++;
+			System.out.println(frame_index);
 			if (frame_index == frame_len) {
 				frame_index = 0;
 			}
 			image = frame_list.get(frame_index);
 			cur_time = cur_time % total_dur;
 		}
+		System.out.println("cur_time: " + cur_time);
 	}
 	
 	public Image get_image() {
@@ -51,6 +59,6 @@ public class Animation {
 		total_dur = anim_acc_dur_list.get(frame_len-1);
 		cur_time = 0;
 		frame_index = 0;
-		image = frame_list.get(frame_index);
+		image = frame_list.get(0);
 	}
 }

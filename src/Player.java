@@ -23,8 +23,8 @@ public class Player extends Sprite {
 		super(x, y, v_x, v_y, anim);
 		this.res_manager = rm;
 
-		dur_list.add(200);
-		dur_list.add(200);
+		dur_list.add(500);
+		dur_list.add(500);
 		
 		image_list_left.add(res_manager.get_image("ml1"));
 		image_list_left.add(res_manager.get_image("ml2"));
@@ -35,7 +35,7 @@ public class Player extends Sprite {
 		image_list_still_left.add(res_manager.get_image("mls"));
 		
 		image_list_still_right.add(res_manager.get_image("mrs"));
-		dur_list.add(200);
+		dur_list_still.add(200);
 		
 		state = States.IN_AIR;
 	}
@@ -70,9 +70,9 @@ public class Player extends Sprite {
 			}
 			else {
 				if (dir < 0)
-					set_anim(new Animation(image_list_still_right, dur_list));
+					set_anim(new Animation(image_list_still_right, dur_list_still));
 				else
-					set_anim(new Animation(image_list_still_left, dur_list));
+					set_anim(new Animation(image_list_still_left, dur_list_still));
 			}
 			dir = (int) (-1 * Math.signum(v_x));
 		}
