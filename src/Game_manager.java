@@ -224,17 +224,19 @@ public class Game_manager {
 		}
 		return false;
 	}
-
+	private int count;
 	private void register_key_actions(Input_manager input_manager) {
 		Key_action action_left = new Key_action("action_left", KeyEvent.VK_LEFT) {
 
 			@Override
 			public void key_released() {
 				player.set_v_x(0);
+				System.out.println(count++ + " Left released!!!");
 			}
 
 			@Override
 			public void key_pressed() {
+				System.out.println(count++ + " Left pressed!!!");
 				player.set_v_x(-0.5f);
 			}
 		};
@@ -244,10 +246,12 @@ public class Game_manager {
 			@Override
 			public void key_released() {
 				player.set_v_x(0);
+				System.out.println(count++ + "Right released!!!");
 			}
 
 			@Override
 			public void key_pressed() {
+				System.out.println(count++ + " Right pressed!!!");
 				player.set_v_x(0.5f);
 			}
 		};
@@ -326,9 +330,9 @@ public class Game_manager {
 						break;
 					}
 
-					Sprite sprite = new Sprite(i * tile_width, j * tile_height,
-							-0.1f, 0, anim);
-					sprites.add(sprite);
+					//Sprite sprite = new Sprite(i * tile_width, j * tile_height,
+					//		-0.1f, 0, anim);
+					//sprites.add(sprite);
 
 					tiles.set_tile(i, j, null);
 				}

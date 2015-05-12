@@ -62,6 +62,7 @@ public class Player extends Sprite {
 
 	public void set_v_x(float v_x) {
 		if (Math.signum(dir) != Math.signum(v_x)) {
+			//System.out.println("dir changed from " + Math.signum(dir) + "to " + Math.signum(v_x));
 			if (Math.signum(v_x) < 0) {
 				set_anim(new Animation(image_list_left, dur_list));
 			}
@@ -70,11 +71,11 @@ public class Player extends Sprite {
 			}
 			else {
 				if (dir < 0)
-					set_anim(new Animation(image_list_still_right, dur_list_still));
-				else
 					set_anim(new Animation(image_list_still_left, dur_list_still));
+				else
+					set_anim(new Animation(image_list_still_right, dur_list_still));
 			}
-			dir = (int) (-1 * Math.signum(v_x));
+			dir = (int) Math.signum(v_x);
 		}
 
 		super.set_v_x(v_x);
