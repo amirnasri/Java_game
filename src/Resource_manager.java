@@ -3,6 +3,7 @@ import java.awt.Image;
 import java.awt.Transparency;
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.swing.ImageIcon;
@@ -82,5 +83,67 @@ public class Resource_manager {
 		return newImage;
 	}
 
+	// ToDo
+	// Improve get_anim by building anims first and then reusing them
+	
+	public Animation get_anim(String anim_name) {
+
+		ArrayList<Integer> dur_list;
+		ArrayList<Image> image_list;
+		switch (anim_name) {
+		case "fly":
+			image_list = new ArrayList<Image>();
+			image_list.add(get_image("f1"));
+			image_list.add(get_image("f2"));
+			image_list.add(get_image("f3"));
+			dur_list = new ArrayList<>();
+			dur_list.add(50);
+			dur_list.add(50);
+			dur_list.add(50);
+			break;
+		case "grub":
+			image_list = new ArrayList<Image>();
+			image_list.add(get_image("g1"));
+			image_list.add(get_image("g2"));
+			dur_list = new ArrayList<>();
+			dur_list.add(100);
+			dur_list.add(100);
+			break;
+		case "mario_run_left":
+			image_list = new ArrayList<Image>();
+			image_list.add(get_image("ml1"));
+			image_list.add(get_image("ml2"));
+			dur_list = new ArrayList<>();
+			dur_list.add(200);
+			dur_list.add(200);
+			break;
+		case "mario_run_right":
+			image_list = new ArrayList<Image>();
+			image_list.add(get_image("mr1"));
+			image_list.add(get_image("mr2"));
+			dur_list = new ArrayList<>();
+			dur_list.add(200);
+			dur_list.add(200);
+			break;
+		case "mario_still_left":
+			image_list = new ArrayList<Image>();
+			image_list.add(get_image("mls"));
+			dur_list = new ArrayList<>();
+			dur_list.add(200);
+			break;
+		case "mario_still_right":
+			image_list = new ArrayList<Image>();
+			image_list.add(get_image("mrs"));
+			dur_list = new ArrayList<>();
+			dur_list.add(200);
+			break;
+		default:
+			image_list = new ArrayList<Image>();
+			image_list.add(get_image(anim_name));
+			dur_list = new ArrayList<>();
+			dur_list.add(50);
+		}
+		return new Animation(image_list, dur_list);
+	}
 
 }

@@ -12,17 +12,20 @@ public class Player extends Sprite {
 	private States state;
 	private int dir = 1;
 	private Resource_manager res_manager;
+	/*
 	private ArrayList<Integer> dur_list = new ArrayList<>();
 	private ArrayList<Integer> dur_list_still = new ArrayList<>();
 	private ArrayList<Image> image_list_left = new ArrayList<Image>();
 	private ArrayList<Image> image_list_right = new ArrayList<Image>();
 	private ArrayList<Image> image_list_still_left = new ArrayList<Image>();
 	private ArrayList<Image> image_list_still_right = new ArrayList<Image>();
+	*/
 	
 	public Player(int x, int y, float v_x, float v_y, Animation anim, Resource_manager rm) {
 		super(x, y, v_x, v_y, anim);
 		this.res_manager = rm;
-
+		
+		/*
 		dur_list.add(500);
 		dur_list.add(500);
 		
@@ -36,6 +39,7 @@ public class Player extends Sprite {
 		
 		image_list_still_right.add(res_manager.get_image("mrs"));
 		dur_list_still.add(200);
+		*/
 		
 		state = States.IN_AIR;
 	}
@@ -64,16 +68,17 @@ public class Player extends Sprite {
 		if (Math.signum(dir) != Math.signum(v_x)) {
 			//System.out.println("dir changed from " + Math.signum(dir) + "to " + Math.signum(v_x));
 			if (Math.signum(v_x) < 0) {
-				set_anim(new Animation(image_list_left, dur_list));
+				//set_anim(new Animation(image_list_left, dur_list));
+				set_anim(res_manager.get_anim("mario_run_left"));
 			}
 			else if (Math.signum(v_x) > 0) {
-				set_anim(new Animation(image_list_right, dur_list));
+				set_anim(res_manager.get_anim("mario_run_right"));
 			}
 			else {
 				if (dir < 0)
-					set_anim(new Animation(image_list_still_left, dur_list_still));
+					set_anim(res_manager.get_anim("mario_still_left"));
 				else
-					set_anim(new Animation(image_list_still_right, dur_list_still));
+					set_anim(res_manager.get_anim("mario_still_right"));
 			}
 			dir = (int) Math.signum(v_x);
 		}

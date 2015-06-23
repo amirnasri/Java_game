@@ -27,6 +27,8 @@ public class Input_manager implements ActionListener {
 
 	public Input_manager(Screen_manager screen_manager) {
 		key_action_array = new Key_action[600];
+		
+		/*
 		current_time = System.currentTimeMillis();
 		timer = new Timer(5, this);
 		timer.setRepeats(false);
@@ -58,7 +60,7 @@ public class Input_manager implements ActionListener {
 				Key_action key_action;
 				if (released_key_code != -1 && !pressed) {
 					key_action = key_action_array[released_key_code];  
-					if (!pressed && key_action != null)
+					if (key_action != null)
 						key_action.key_released();
 				}
 				
@@ -69,7 +71,28 @@ public class Input_manager implements ActionListener {
 				pressed = true;
 			}
 		};
-		
+		*/
+		KeyListener key_listener = new KeyListener() {
+			
+			@Override
+			public void keyTyped(KeyEvent key_event) {
+			}
+			
+			@Override
+			public void keyReleased(KeyEvent key_event) {
+				Key_action key_action = key_action_array[key_event.getKeyCode()];  
+				if (key_action != null)
+					key_action.key_released();
+			}
+			
+			@Override
+			public void keyPressed(KeyEvent key_event) {
+				Key_action key_action = key_action_array[key_event.getKeyCode()];  
+				if (key_action != null)
+					key_action.key_pressed();
+			}
+		};
+
 		screen_manager.register_key_listener(key_listener);
 	}
 	

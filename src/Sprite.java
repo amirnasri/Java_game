@@ -12,8 +12,8 @@ public class Sprite {
 	protected float x_new;
 	protected float y_new;
 	//private Image image;
-	private int image_width;
-	private int image_height;
+	private float image_width;
+	private float image_height;
 	private static int display_x_offset;
 	private Animation anim;
 	
@@ -23,6 +23,8 @@ public class Sprite {
 		this.v_x = v_x;
 		this.v_y = v_y;
 		this.anim = anim;
+		this.image_width = get_width();
+		this.image_height = get_height();
 	}
 	
 	public void set_anim(Animation anim) {
@@ -82,7 +84,7 @@ public class Sprite {
 
 	public Rectangle get_bounding_box() {
 		//return new Rectangle(x + image_width/2, y + image_height/2, image_width, image_height);
-		return new Rectangle((int) x, (int) y, image_width, image_height);
+		return new Rectangle((int) x, (int) y, (int) image_width, (int) image_height);
 	}
 	
 	public float get_width() {

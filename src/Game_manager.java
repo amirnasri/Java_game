@@ -7,12 +7,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.Format;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -22,7 +25,9 @@ import javax.swing.ImageIcon;
 
 public class Game_manager {
 
-	private LinkedList<Sprite> sprites;
+	private LinkedList<Sprite> sprites_left;
+	private LinkedList<Sprite> sprites_middle;
+	private LinkedList<Sprite> sprites_right;
 	private Tiles tiles;
 	private Player player;
 	private Screen_manager screen_manager;
@@ -35,8 +40,7 @@ public class Game_manager {
 	// Width and height of current game display
 	private int display_width;
 	private int display_height;
-	private int display_x_min;
-	private int display_x_max;
+	private Key_action current_key;
 	long current_time;
 
 	private final static int Timer_delay = 10;
@@ -80,7 +84,9 @@ public class Game_manager {
 	}
 
 	Game_manager() throws IOException {
-		sprites = new LinkedList<Sprite>();
+		sprites_left = new LinkedList<Sprite>();
+		sprites_middle = new LinkedList<Sprite>();
+		sprites_right = new LinkedList<Sprite>();
 		screen_manager = new Screen_manager();
 		res_manager = new Resource_manager(screen_manager);
 		//load_images();
@@ -130,15 +136,13 @@ public class Game_manager {
 		}
 
 	}
-
-	private boolean check_collision(int elapsed_time) {
-
+	
+	private static boolean rectangle_collision(Rectangle r1, Rectangle r2) {
+		return r1.intersects(r2);
+	}
+	
+	private boolean check_tile_collision(int elapsed_time) {
 		boolean collision = false;
-
-		Rectangle player_bb = player.get_bounding_box();
-
-		// check collision between the player and tiles
-
 		float dy = player.get_v_y() * elapsed_time;
 		if (dy > 0) {
 			int cur_tile_x = (int) Math.floor((player.get_x() + player
@@ -174,10 +178,12 @@ public class Game_manager {
 					.get_width()) / tile_width);
 
 			for (int t = cur_tile_x; t <= new_tile_x; t++) {
+				// Detect collision with the right "wall" or a tile
 				if (t > tiles.get_dim(1) - 1
 						|| tiles.get_tile(t, cur_tile_y) != null) {
 					player.set_y(player.get_y() + player.get_v_y()
 							* elapsed_time);
+					// Adjust x coordinate of player to the tile it collided with
 					player.set_x(t * tile_width - player.get_width());
 					player.tile_collision_x();
 					collision = true;
@@ -191,9 +197,11 @@ public class Game_manager {
 					/ tile_width);
 
 			for (int t = cur_tile_x; t >= new_tile_x; t--) {
+				// Detect collision with the left "wall" or a tile
 				if (t < 0 || tiles.get_tile(t, cur_tile_y) != null) {
 					player.set_y(player.get_y() + player.get_v_y()
 							* elapsed_time);
+					// Adjust x coordinate of player to the tile it collided with
 					player.set_x((t + 1) * tile_width);
 					player.tile_collision_x();
 					collision = true;
@@ -202,6 +210,7 @@ public class Game_manager {
 
 			}
 		}
+		return collision;
 		/*
 		 * for (int i=Math.max(display_x_min/tile_width, 0); i <
 		 * Math.min(display_x_max/tile_width, tiles.get_dim(1)); i++) for (int j
@@ -216,28 +225,54 @@ public class Game_manager {
 		 * 
 		 * } }
 		 */
+	}
+
+	private boolean check_collision(int elapsed_time) {
+
+		boolean tile_collision;
+
+		Rectangle player_bb = player.get_bounding_box();
+
+		// check collision between the player and tiles
+		tile_collision = check_tile_collision(elapsed_time);
+		
+		for (Sprite s: sprites_middle) {
+			Graphics2D g2d = screen_manager.get_graphics();
+			Rectangle s_bb = s.get_bounding_box();
+			g2d.drawRect(s_bb.x, s_bb.y, s_bb.width, s_bb.height);
+			if (rectangle_collision(player_bb, s.get_bounding_box())) {
+				System.out.println("collision with ");
+			}
+		}
 
 		// player.update_apply();
-		if (!collision) {
-			player.set_x(player.get_x() + dx);
-			player.set_y(player.get_y() + dy);
+		if (!tile_collision) {
+			player.set_x(player.get_x() + player.get_v_x() * elapsed_time);
+			player.set_y(player.get_y() + player.get_v_y() * elapsed_time);
 		}
 		return false;
 	}
-	private int count;
+
 	private void register_key_actions(Input_manager input_manager) {
 		Key_action action_left = new Key_action("action_left", KeyEvent.VK_LEFT) {
 
 			@Override
 			public void key_released() {
-				player.set_v_x(0);
-				System.out.println(count++ + " Left released!!!");
+				super.key_released();
 			}
 
 			@Override
 			public void key_pressed() {
-				System.out.println(count++ + " Left pressed!!!");
+				super.key_pressed();
 				player.set_v_x(-0.5f);
+				current_key = this;
+			}
+
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				if (current_key != this)
+					return;
+				player.set_v_x(0);
 			}
 		};
 
@@ -245,14 +280,21 @@ public class Game_manager {
 
 			@Override
 			public void key_released() {
-				player.set_v_x(0);
-				System.out.println(count++ + "Right released!!!");
+				super.key_released();
 			}
 
 			@Override
 			public void key_pressed() {
-				System.out.println(count++ + " Right pressed!!!");
+				super.key_pressed();
 				player.set_v_x(0.5f);
+				current_key = this;
+			}
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (current_key != this)
+					return;
+				player.set_v_x(0);
 			}
 		};
 
@@ -260,12 +302,19 @@ public class Game_manager {
 
 			@Override
 			public void key_released() {
+				super.key_released();
 				// player.set_v_y(0);
 			}
 
 			@Override
 			public void key_pressed() {
+				super.key_pressed();
 				player.jump();
+			}
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				player.set_v_y(0);
 			}
 		};
 
@@ -273,12 +322,21 @@ public class Game_manager {
 
 			@Override
 			public void key_released() {
-				player.set_v_y(0);
+				super.key_released();
 			}
 
 			@Override
 			public void key_pressed() {
+				super.key_pressed();
 				player.set_v_y(0.5f);
+				current_key = this;
+			}
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (current_key != this)
+					return;
+				player.set_v_y(0);
 			}
 		};
 
@@ -312,34 +370,51 @@ public class Game_manager {
 			line = lines.get(j);
 			for (int i = 0; i < line.length(); i++) {
 				char ch = line.charAt(i);
-				if (ch >= 'A' && ch <= 'H') {
+				if (ch >= 'A' && ch <= 'I') {
 					tiles.set_tile(i, j, res_manager.get_image(Character.toString(ch)));
 				} else {
 					Animation anim;
 					switch (ch) {
 					case 'f':
-						anim = get_anim("fly");
+						anim = res_manager.get_anim("fly");
 						break;
 
 					case 'g':
-						anim = get_anim("grub");
+						anim = res_manager.get_anim("grub");
 						break;
 
+					case ' ':
+						anim = null;
+						break;
+						
 					default:
-						anim = get_anim(Character.toString(ch));
+						anim = res_manager.get_anim(Character.toString(ch));
 						break;
 					}
 
-					//Sprite sprite = new Sprite(i * tile_width, j * tile_height,
-					//		-0.1f, 0, anim);
-					//sprites.add(sprite);
-
 					tiles.set_tile(i, j, null);
+
+					if (anim != null) {
+						Sprite sprite = new Sprite(i * tile_width, j * tile_height,
+								-0.1f, 0, anim);
+						int sprite_x = (int) sprite.get_x();
+						int display_x_min = get_display_x_min(0);
+						int display_x_max = display_x_min + display_width;
+						if (sprite_x < display_x_min) {
+							sprites_left.add(sprite);
+						}
+						else if (sprite_x < display_x_max) {
+							sprites_middle.add(sprite);
+						}
+						else {
+							sprites_right.add(sprite);
+						}
+					}
 				}
 			}
 		}
 
-		player = new Player(100, 100, 0, 0, get_anim("mario_run"), res_manager);
+		player = new Player(100, 100, 0, 0, res_manager.get_anim("mario_still_right"), res_manager);
 	}
 
 	private void set_tile_dimension() {
@@ -350,10 +425,15 @@ public class Game_manager {
 	void update(int elapsed_time) {
 		player.update(elapsed_time);
 
-		for (Sprite s : sprites) {
+		for (Sprite s : sprites_middle) {
 			s.update(elapsed_time);
 			s.update_apply();
 		}
+	}
+
+	private int get_display_x_min(int player_x) {
+		return Math.min(total_display_width - display_width,
+				Math.max(0, player_x - display_width / 2));
 	}
 
 	void render_display() {
@@ -364,10 +444,8 @@ public class Game_manager {
 		g2d.drawImage(background, 0, 0, null);
 
 		int player_x = (int) player.get_x();
-		display_x_min = Math.min(total_display_width - display_width,
-				Math.max(0, player_x - display_width / 2));
-		// display_x_max = display_x_min + display_width + 2 * tile_width;
-		display_x_max = display_x_min + display_width;
+		int display_x_min = get_display_x_min(player_x);
+		int display_x_max = display_x_min + display_width;
 		// int offset = Math.min(total_display_width - display_width,
 		// Math.max(0, player_x - display_width/2));
 		int offset;
@@ -391,50 +469,11 @@ public class Game_manager {
 						* tile_height, null);
 			}
 
-		for (Sprite s : sprites)
+		for (Sprite s : sprites_middle)
 			s.draw(g2d);
 
 		g2d.dispose();
 		screen_manager.show();
 	}
-	
-	private Animation get_anim(String anim_name) {
 
-		ArrayList<Integer> dur_list;
-		ArrayList<Image> image_list;
-		switch (anim_name) {
-		case "fly":
-			image_list = new ArrayList<Image>();
-			image_list.add(res_manager.get_image("f1"));
-			image_list.add(res_manager.get_image("f2"));
-			image_list.add(res_manager.get_image("f3"));
-			dur_list = new ArrayList<>();
-			dur_list.add(50);
-			dur_list.add(50);
-			dur_list.add(50);
-			break;
-		case "grub":
-			image_list = new ArrayList<Image>();
-			image_list.add(res_manager.get_image("g1"));
-			image_list.add(res_manager.get_image("g2"));
-			dur_list = new ArrayList<>();
-			dur_list.add(100);
-			dur_list.add(100);
-			break;
-		case "mario_run":
-			image_list = new ArrayList<Image>();
-			image_list.add(res_manager.get_image("mr1"));
-			image_list.add(res_manager.get_image("mr2"));
-			dur_list = new ArrayList<>();
-			dur_list.add(200);
-			dur_list.add(200);
-			break;
-		default:
-			image_list = new ArrayList<Image>();
-			image_list.add(res_manager.get_image(anim_name));
-			dur_list = new ArrayList<>();
-			dur_list.add(50);
-		}
-		return new Animation(image_list, dur_list);
-	}
 }
