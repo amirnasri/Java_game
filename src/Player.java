@@ -22,7 +22,7 @@ public class Player extends Sprite {
 	*/
 	
 	public Player(int x, int y, float v_x, float v_y, Animation anim, Resource_manager rm) {
-		super(x, y, v_x, v_y, anim);
+		super("player", x, y, v_x, v_y, anim);
 		this.res_manager = rm;
 		
 		/*

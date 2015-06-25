@@ -18,3 +18,9 @@
                  EF                                 EGD
         EF  g    CD       g           g            EGAD     *
 BBBBBBBBGHBBBBBBBGHBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBGAAHBBBBBBBBBBB
+------------------------------------------------------------------
+# Initial speeds:
+g -0.1
+f 0.1
+s 0
+* 0

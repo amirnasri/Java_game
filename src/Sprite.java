@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 
 public class Sprite {
+	private String name;
 	protected float x;
 	protected float y;
 	protected float v_x;
@@ -17,7 +18,8 @@ public class Sprite {
 	private static int display_x_offset;
 	private Animation anim;
 	
-	public Sprite(int x, int y, float v_x, float v_y, Animation anim) {
+	public Sprite(String name, int x, int y, float v_x, float v_y, Animation anim) {
+		this.name = name;
 		this.x = x;
 		this.y = y;
 		this.v_x = v_x;
@@ -37,6 +39,10 @@ public class Sprite {
 
 	public void update(int elapsed_time) {
 		anim.update(elapsed_time);
+		if (name.equals("f")) {
+			v_x = (float) (v_x + elapsed_time * (Math.random() - 0.5) * 0.01); 
+			v_y = (float) ((Math.random() - 0.5) * 1); 
+		}
 		x_new = x + v_x * elapsed_time;
 		y_new = y + v_y * elapsed_time;
 	}
@@ -80,6 +86,10 @@ public class Sprite {
 
 	public float get_v_y() {
 		return v_y;
+	}
+	
+	public String get_name() {
+		return name;
 	}
 
 	public Rectangle get_bounding_box() {
