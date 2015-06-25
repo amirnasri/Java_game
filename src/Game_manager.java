@@ -161,7 +161,7 @@ public class Game_manager {
 					//player.set_x(player.get_x() + player.get_v_x()
 					//		* elapsed_time);
 					player.set_y(t * tile_height - player.get_height());
-					player.tile_collision_y();
+					player.tile_collision_up();
 					collision_up = true;
 					break;
 				}
@@ -178,7 +178,7 @@ public class Game_manager {
 					//		* elapsed_time);
 					// Adjust x coordinate of player to the tile it collided with
 					player.set_y((t + 1) * tile_height);
-					player.tile_collision_y();
+					player.tile_collision_down();
 					collision_down = true;
 					break;
 				}
@@ -201,7 +201,7 @@ public class Game_manager {
 					//		* elapsed_time);
 					// Adjust x coordinate of player to the tile it collided with
 					player.set_x(t * tile_width - player.get_width());
-					player.tile_collision_x();
+					player.tile_collision_right();
 					collision_right = true;
 					break;
 				}
@@ -218,7 +218,7 @@ public class Game_manager {
 					//		* elapsed_time);
 					// Adjust x coordinate of player to the tile it collided with
 					player.set_x((t + 1) * tile_width);
-					player.tile_collision_x();
+					player.tile_collision_left();
 					collision_left = true;
 					break;
 				}

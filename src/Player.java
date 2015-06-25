@@ -53,15 +53,17 @@ public class Player extends Sprite {
 		super.update(elapsed_time);
 	}
 	
-	public void tile_collision_x() {
+	public void tile_collision_left() {
 		v_x = 0;
 	}
 	
-	public void tile_collision_y() {
-		if (v_y > 0) {
+	public void tile_collision_right() {
+		v_x = 0;
+	}
+
+	public void tile_collision_down() {
 			v_y = 0;
 			state = States.ON_GROUND;
-		}
 	}
 
 	public void set_v_x(float v_x) {

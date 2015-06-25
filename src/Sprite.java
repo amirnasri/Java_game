@@ -3,6 +3,8 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 
+import Player.States;
+
 
 public class Sprite {
 	private String name;
@@ -104,4 +106,17 @@ public class Sprite {
 	public float get_height() {
 		return anim.get_height();
 	}
+	
+	public void tile_collision_left() {
+	}
+	
+	public void tile_collision_right() {
+	}
+
+	public void tile_collision_up() {
+	}
+
+	public void tile_collision_down() {
+	}
+
 }
