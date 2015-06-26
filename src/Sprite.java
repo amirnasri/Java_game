@@ -3,7 +3,7 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 
-import Player.States;
+//import Player.States;
 
 
 public class Sprite {
@@ -12,8 +12,8 @@ public class Sprite {
 	protected float y;
 	protected float v_x;
 	protected float v_y;
-	protected float x_new;
-	protected float y_new;
+	//protected float x_new;
+	//protected float y_new;
 	//private Image image;
 	private float image_width;
 	private float image_height;
@@ -39,19 +39,20 @@ public class Sprite {
 		display_x_offset = offset;	
 	}
 
+	// Chance for sprite to update its state
 	public void update(int elapsed_time) {
 		anim.update(elapsed_time);
 		if (name.equals("f")) {
 			v_x = (float) (v_x + elapsed_time * (Math.random() - 0.5) * 0.01); 
-			v_y = (float) ((Math.random() - 0.5) * 1); 
+			v_y = (float) (elapsed_time * (Math.random() - 0.5) * 0.01); 
 		}
-		x_new = x + v_x * elapsed_time;
-		y_new = y + v_y * elapsed_time;
+		//x_new = x + v_x * elapsed_time;
+		//y_new = y + v_y * elapsed_time;
 	}
 	
 	public void update_apply() {
-		x = x_new;
-		y = y_new;
+		//x = x_new;
+		//y = y_new;
 	}
 		
 	public void draw(Graphics2D g2d) {
@@ -108,15 +109,18 @@ public class Sprite {
 	}
 	
 	public void tile_collision_left() {
+		set_v_x(-v_x);
 	}
 	
 	public void tile_collision_right() {
+		set_v_x(-v_x);
 	}
 
 	public void tile_collision_up() {
 	}
 
 	public void tile_collision_down() {
+		set_v_y(0);
 	}
 
 }

@@ -19,7 +19,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Formatter;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.ListIterator;
 
 import javax.imageio.ImageIO;
 import javax.swing.Timer;
@@ -120,6 +122,13 @@ public class Game_manager {
 			if (current_time != 0)
 				elapsed_time = (int) (new_time - current_time);
 			current_time = new_time;
+
+			// Update sprites coordinates and check collision between them and tiles.
+			// Adjust sprites coordinates if necessary.
+			move_check_tile_collision(player, elapsed_time);
+			for (Sprite sprite : sprites_middle)
+				move_check_tile_collision(sprite, elapsed_time);
+
 			check_collision(elapsed_time);
 
 			render_display();
@@ -138,87 +147,87 @@ public class Game_manager {
 		return r1.intersects(r2);
 	}
 	
-	private boolean check_tile_collision(int elapsed_time) {
+	private void move_check_tile_collision(Sprite sprite, int elapsed_time) {
 		boolean collision_up = false;
 		boolean collision_down = false;
 		boolean collision_right = false;
 		boolean collision_left = false;
 		int cur_tile_x, cur_tile_y, new_tile_x, new_tile_y;
-		float dy = player.get_v_y() * elapsed_time;
-		cur_tile_x = (int) Math.floor((player.get_x() + player.get_width() / 2) / tile_width);
-		// int new_tile_x = (int) Math.floor((player.get_x_new() +
-		// player.get_width()/2)/tile_width);
+		float dy = sprite.get_v_y() * elapsed_time;
+		cur_tile_x = (int) Math.floor((sprite.get_x() + sprite.get_width() / 2) / tile_width);
+		// int new_tile_x = (int) Math.floor((sprite.get_x_new() +
+		// sprite.get_width()/2)/tile_width);
 
 		if (dy > 0) {
-			cur_tile_y = (int) Math.floor((player.get_y() + player
+			cur_tile_y = (int) Math.floor((sprite.get_y() + sprite
 					.get_height()) / tile_height);
 
-			new_tile_y = (int) Math.floor((player.get_y() + dy + player
+			new_tile_y = (int) Math.floor((sprite.get_y() + dy + sprite
 					.get_height()) / tile_height);
 
 			for (int t = cur_tile_y; t <= new_tile_y; t++) {
 				if (tiles.get_tile(cur_tile_x, t) != null) {
-					//player.set_x(player.get_x() + player.get_v_x()
+					//sprite.set_x(sprite.get_x() + sprite.get_v_x()
 					//		* elapsed_time);
-					player.set_y(t * tile_height - player.get_height());
-					player.tile_collision_up();
+					sprite.set_y(t * tile_height - sprite.get_height());
+					sprite.tile_collision_down();
 					collision_up = true;
 					break;
 				}
 
 			}
 		} else {
-			cur_tile_y = (int) Math.floor((player.get_y()) / tile_height);
-			new_tile_y = (int) Math.floor((player.get_y() + dy) / tile_height);
+			cur_tile_y = (int) Math.floor((sprite.get_y()) / tile_height);
+			new_tile_y = (int) Math.floor((sprite.get_y() + dy) / tile_height);
 
 			for (int t = cur_tile_y; t >= new_tile_y; t--) {
 				// Detect collision with the left "wall" or a tile
 				if (tiles.get_tile(cur_tile_x, t) != null) {
-					//player.set_x(player.get_x() + player.get_v_x()
+					//sprite.set_x(sprite.get_x() + sprite.get_v_x()
 					//		* elapsed_time);
-					// Adjust x coordinate of player to the tile it collided with
-					player.set_y((t + 1) * tile_height);
-					player.tile_collision_down();
+					// Adjust x coordinate of sprite to the tile it collided with
+					sprite.set_y((t + 1) * tile_height);
+					sprite.tile_collision_up();
 					collision_down = true;
 					break;
 				}
 			}
 		}
 
-		float dx = player.get_v_x() * elapsed_time;
-		cur_tile_y = (int) Math.floor((player.get_y() + player.get_height() / 2) / tile_height);
+		float dx = sprite.get_v_x() * elapsed_time;
+		cur_tile_y = (int) Math.floor((sprite.get_y() + sprite.get_height() / 2) / tile_height);
 		if (dx > 0) {
-			cur_tile_x = (int) Math.floor((player.get_x() + player
+			cur_tile_x = (int) Math.floor((sprite.get_x() + sprite
 					.get_width()) / tile_width);
-			new_tile_x = (int) Math.floor((player.get_x() + dx + player
+			new_tile_x = (int) Math.floor((sprite.get_x() + dx + sprite
 					.get_width()) / tile_width);
 
 			for (int t = cur_tile_x; t <= new_tile_x; t++) {
 				// Detect collision with the right "wall" or a tile
 				if (t > tiles.get_dim(1) - 1
 						|| tiles.get_tile(t, cur_tile_y) != null) {
-					//player.set_y(player.get_y() + player.get_v_y()
+					//sprite.set_y(sprite.get_y() + sprite.get_v_y()
 					//		* elapsed_time);
-					// Adjust x coordinate of player to the tile it collided with
-					player.set_x(t * tile_width - player.get_width());
-					player.tile_collision_right();
+					// Adjust x coordinate of sprite to the tile it collided with
+					sprite.set_x(t * tile_width - sprite.get_width());
+					sprite.tile_collision_right();
 					collision_right = true;
 					break;
 				}
 
 			}
 		} else {
-			cur_tile_x = (int) Math.floor((player.get_x()) / tile_width);
-			new_tile_x = (int) Math.floor((player.get_x() + dx) / tile_width);
+			cur_tile_x = (int) Math.floor((sprite.get_x()) / tile_width);
+			new_tile_x = (int) Math.floor((sprite.get_x() + dx) / tile_width);
 
 			for (int t = cur_tile_x; t >= new_tile_x; t--) {
 				// Detect collision with the left "wall" or a tile
 				if (t < 0 || tiles.get_tile(t, cur_tile_y) != null) {
-					//player.set_y(player.get_y() + player.get_v_y()
+					//sprite.set_y(sprite.get_y() + sprite.get_v_y()
 					//		* elapsed_time);
-					// Adjust x coordinate of player to the tile it collided with
-					player.set_x((t + 1) * tile_width);
-					player.tile_collision_left();
+					// Adjust x coordinate of sprite to the tile it collided with
+					sprite.set_x((t + 1) * tile_width);
+					sprite.tile_collision_left();
 					collision_left = true;
 					break;
 				}
@@ -227,15 +236,15 @@ public class Game_manager {
 		}
 
 		if (!collision_up && !collision_down) {
-			player.set_y(player.get_y() + player.get_v_y()
+			sprite.set_y(sprite.get_y() + sprite.get_v_y()
 					* elapsed_time);
 		}
 		if (!collision_left && !collision_right) {
-			player.set_x(player.get_x() + player.get_v_x()
+			sprite.set_x(sprite.get_x() + sprite.get_v_x()
 					* elapsed_time);
 		}
 		
-		return collision_up || collision_down || collision_left || collision_right;
+		//return collision_up || collision_down || collision_left || collision_right;
 		/*
 		 * for (int i=Math.max(display_x_min/tile_width, 0); i <
 		 * Math.min(display_x_max/tile_width, tiles.get_dim(1)); i++) for (int j
@@ -244,8 +253,8 @@ public class Game_manager {
 		 * i * tile.getWidth(null), (int) j * tile.getHeight(null),
 		 * tile.getWidth(null), tile.getHeight(null));
 		 * 
-		 * if (player_bb.intersects(tile_bounding_box)) {
-		 * //System.out.println("Collision!!!!!"); player.tile_collision();
+		 * if (sprite_bb.intersects(tile_bounding_box)) {
+		 * //System.out.println("Collision!!!!!"); sprite.tile_collision();
 		 * return true; }
 		 * 
 		 * } }
@@ -254,19 +263,21 @@ public class Game_manager {
 
 	private boolean check_collision(int elapsed_time) {
 
-		boolean tile_collision;
-
 		Rectangle player_bb = player.get_bounding_box();
 
-		// check collision between the player and tiles
-		tile_collision = check_tile_collision(elapsed_time);
-		
-		for (Sprite s: sprites_middle) {
+		Sprite s;
+		ListIterator<Sprite> it = sprites_middle.listIterator(); 
+		while (it.hasNext()) {
+			s = it.next();
 			Graphics2D g2d = screen_manager.get_graphics();
 			Rectangle s_bb = s.get_bounding_box();
 			g2d.drawRect(s_bb.x, s_bb.y, s_bb.width, s_bb.height);
 			if (rectangle_collision(player_bb, s.get_bounding_box())) {
-				System.out.println("collision with ");
+				System.out.println(player.get_v_y());
+				if (player.get_state() == Player.States.IN_AIR && player.get_v_y() > 0) {
+					it.remove();
+					player.set_v_y(-player.get_v_y());
+				}
 			}
 		}
 
@@ -490,7 +501,6 @@ public class Game_manager {
 		int index = 0;
 		for (Sprite s : sprites_middle) {
 			s.update(elapsed_time);
-			s.update_apply();
 			
 			// Find sprites in minimum and maximum x
 			int s_x = (int) s.get_x();

@@ -7,8 +7,6 @@ public class Player extends Sprite {
 		NORMAL, ON_GROUND, IN_AIR, IDLE
 	}
 
-	private static final int ArrayList = 0;
-	private static final int Image = 0;
 	private States state;
 	private int dir = 1;
 	private Resource_manager res_manager;
@@ -47,23 +45,21 @@ public class Player extends Sprite {
 	public void update(int elapsed_time) {
 		super.update(elapsed_time);
 		//if (state == States.IN_AIR) {
-		v_y = v_y + 0.1f;
+			v_y = v_y + 0.1f;
 		//}
-		
-		super.update(elapsed_time);
 	}
 	
 	public void tile_collision_left() {
-		v_x = 0;
+		set_v_x(0);
 	}
 	
 	public void tile_collision_right() {
-		v_x = 0;
+		set_v_x(0);
 	}
 
 	public void tile_collision_down() {
-			v_y = 0;
-			state = States.ON_GROUND;
+		set_v_y(0);
+		state = States.ON_GROUND;
 	}
 
 	public void set_v_x(float v_x) {
@@ -91,5 +87,9 @@ public class Player extends Sprite {
 	public void jump() {
 		v_y = -2;
 		state = States.IN_AIR;
+	}
+	
+	public States get_state() {
+		return state;
 	}
 }

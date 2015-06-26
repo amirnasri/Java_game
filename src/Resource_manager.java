@@ -38,12 +38,15 @@ public class Resource_manager {
 		// Image player_image = ImageIO.read(new File(image_path +
 		// "Mario_Big_Right_Still.png"));
 
-		images.put("mls", get_scaled_image(new ImageIcon(image_path	+ "Mario_Big_Right_Still.png").getImage(), -3, 3));
-		images.put("ml1", get_scaled_image(new ImageIcon(image_path	+ "Mario_Big_Right_1.png").getImage(), -3, 3));
-		images.put("ml2", get_scaled_image(new ImageIcon(image_path	+ "Mario_Big_Right_2.png").getImage(), -3, 3));
-		images.put("mrs", get_scaled_image(new ImageIcon(image_path	+ "Mario_Big_Right_Still.png").getImage(), 3, 3));
-		images.put("mr1", get_scaled_image(new ImageIcon(image_path + "Mario_Big_Right_1.png").getImage(), 3, 3));
-		images.put("mr2", get_scaled_image(new ImageIcon(image_path	+ "Mario_Big_Right_2.png").getImage(), 3, 3));
+		float mario_scale = 1f;
+		images.put("mls", get_scaled_image(new ImageIcon(image_path	+ "Mario_Right_Still.png").getImage(), -mario_scale, mario_scale));
+		images.put("ml3", get_scaled_image(new ImageIcon(image_path	+ "Mario_Right_3.png").getImage(), -mario_scale, mario_scale));
+		images.put("ml2", get_scaled_image(new ImageIcon(image_path	+ "Mario_Right_2.png").getImage(), -mario_scale, mario_scale));
+		images.put("ml1", get_scaled_image(new ImageIcon(image_path	+ "Mario_Right_1.png").getImage(), -mario_scale, mario_scale));
+		images.put("mrs", get_scaled_image(new ImageIcon(image_path	+ "Mario_Right_Still.png").getImage(), mario_scale, mario_scale));
+		images.put("mr3", get_scaled_image(new ImageIcon(image_path	+ "Mario_Right_3.png").getImage(), mario_scale, mario_scale));
+		images.put("mr2", get_scaled_image(new ImageIcon(image_path	+ "Mario_Right_2.png").getImage(), mario_scale, mario_scale));
+		images.put("mr1", get_scaled_image(new ImageIcon(image_path + "Mario_Right_1.png").getImage(), mario_scale, mario_scale));
 		// images.put("pl", player_image);
 
 		// images.put('p', new ImageIcon(image_path + "mario.gif").getImage());
@@ -113,7 +116,9 @@ public class Resource_manager {
 			image_list = new ArrayList<Image>();
 			image_list.add(get_image("ml1"));
 			image_list.add(get_image("ml2"));
+			image_list.add(get_image("ml3"));
 			dur_list = new ArrayList<>();
+			dur_list.add(200);
 			dur_list.add(200);
 			dur_list.add(200);
 			break;
@@ -121,7 +126,9 @@ public class Resource_manager {
 			image_list = new ArrayList<Image>();
 			image_list.add(get_image("mr1"));
 			image_list.add(get_image("mr2"));
+			image_list.add(get_image("mr3"));
 			dur_list = new ArrayList<>();
+			dur_list.add(200);
 			dur_list.add(200);
 			dur_list.add(200);
 			break;
