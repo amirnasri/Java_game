@@ -6,6 +6,8 @@
 <img src="https://github.com/amirnasri/Java_game/blob/master/Screenshot.png" alt="Screen Shot">
 
 <applet code="GameManager.class" codeBase="https://github.com/amirnasri/Java_game/tree/master/bin">
+applet
+</applet>
 
 </body>
 </html>
