@@ -85,8 +85,10 @@ public class Player extends Sprite {
 	}
 
 	public void jump() {
-		v_y = -2;
-		state = States.IN_AIR;
+		if (state == States.ON_GROUND) {
+			v_y = -2.5f;
+			state = States.IN_AIR;
+		}
 	}
 	
 	public States get_state() {

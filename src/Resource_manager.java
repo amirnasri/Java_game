@@ -38,7 +38,7 @@ public class Resource_manager {
 		// Image player_image = ImageIO.read(new File(image_path +
 		// "Mario_Big_Right_Still.png"));
 
-		float mario_scale = 1f;
+		float mario_scale = 1.5f;
 		images.put("mls", get_scaled_image(new ImageIcon(image_path	+ "Mario_Right_Still.png").getImage(), -mario_scale, mario_scale));
 		images.put("ml3", get_scaled_image(new ImageIcon(image_path	+ "Mario_Right_3.png").getImage(), -mario_scale, mario_scale));
 		images.put("ml2", get_scaled_image(new ImageIcon(image_path	+ "Mario_Right_2.png").getImage(), -mario_scale, mario_scale));
@@ -69,8 +69,8 @@ public class Resource_manager {
 				.get_frame()
 				.getGraphicsConfiguration()
 				.createCompatibleImage(
-						(int) Math.abs(x) * image.getWidth(null),
-						(int) Math.abs(y) * image.getHeight(null),
+						(int) (Math.abs(x) * image.getWidth(null)),
+						(int) (Math.abs(y) * image.getHeight(null)),
 						Transparency.BITMASK);
 		AffineTransform transform = new AffineTransform();
 		transform.scale(x, y);
