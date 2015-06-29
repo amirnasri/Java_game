@@ -11,7 +11,7 @@ applet
 
 <section id="main_content">
             <script>
-                var attributes = {codebase: 'https://github.com/amirnasri/Java_game/blob/master/',
+                var attributes = {
                     code: 'HelloWorld.class',
                     width: '800',
                     height: '600'};
