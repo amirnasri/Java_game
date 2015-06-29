@@ -12,6 +12,7 @@ applet
 <section id="main_content">
             <script>
                 var attributes = {
+                    archive: 'HelloWorld.jar'
                     code: 'HelloWorld.class',
                     width: '800',
                     height: '600'};
