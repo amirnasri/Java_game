@@ -6,8 +6,6 @@
 <img src="https://github.com/amirnasri/Java_game/blob/master/Screenshot.png" alt="Screen Shot">
 
 <applet codebase="https://github.com/amirnasri/Java_game/" archive= "HelloWorld.jar" code= "HelloWorld.class">
-applet
-</applet>
 
 <section id="main_content">
             <script>
