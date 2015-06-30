@@ -19,6 +19,8 @@
                 deployJava.runApplet(attributes, parameters, version);
             </script>
 </section>
-        
+ 
+<a href="https://github.com/amirnasri/Java_game/blob/master/JNLPExample.jnlp" type="application/x-java-jnlp-file">
+</a>
 </body>
 </html>
