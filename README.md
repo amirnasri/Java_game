@@ -20,6 +20,6 @@
             </script>
 </section>
  
-<link href="https://github.com/amirnasri/Java_game/blob/master/JNLPExample.jnlp" type="application/x-java-jnlp-file">
+<a href="https://github.com/amirnasri/Java_game/blob/master/JNLPExample.jnlp" download> play</a>
 </body>
 </html>
