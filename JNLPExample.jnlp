@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0+" codebase="https://github.com/amirnasri/Java_game/blob/master/" href="JNLPExample.jnlp">
+
+     <information>
+          <title>JNLP Example</title>
+          <vendor>Java Code Geeks</vendor>
+          <homepage href="https://github.com/amirnasri/Java_game/blob/master/" />
+          <description>JNLP Testing</description>
+     </information>
+
+     <security>
+          <all-permissions/>
+     </security>
+
+     <resources>
+          <j2se version="1.6+" />
+          <jar href="JNLPExample.jar" />
+     </resources>
+
+     <application-desc main-class="main.javacodegeeks.JNLPExample" />
+</jnlp>
