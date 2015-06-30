@@ -21,6 +21,7 @@
 </section>
  
 <a href="https://github.com/amirnasri/Java_game/blob/master/JNLPExample.jnlp" type="application/x-java-jnlp-file">
+play
 </a>
 </body>
 </html>
