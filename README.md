@@ -5,6 +5,7 @@
 <h3>Screenshot</h3>
 <img src="https://github.com/amirnasri/Java_game/blob/master/Screenshot.png" alt="Screen Shot">
 <applet code="HelloWorld.class" codebase="https://amirnasri.github.io"> play applet </applet>
+<a href="https://amirnasri.github.io/JNLPExample.jnlp"> play</a>
 
 <a href="https://raw.githubusercontent.com/amirnasri/Java_game/master/JNLPExample.jnlp" download> play</a>
 </body>
