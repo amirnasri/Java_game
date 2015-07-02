@@ -13,6 +13,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.text.Format;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -273,7 +275,6 @@ public class Game_manager {
 			Rectangle s_bb = s.get_bounding_box();
 			g2d.drawRect(s_bb.x, s_bb.y, s_bb.width, s_bb.height);
 			if (rectangle_collision(player_bb, s.get_bounding_box())) {
-				System.out.println(player.get_v_y());
 				if (player.get_state() == Player.States.IN_AIR && player.get_v_y() > 0) {
 					it.remove();
 					player.set_v_y(-player.get_v_y());
@@ -386,8 +387,11 @@ public class Game_manager {
 
 		set_tile_dimension();
 
-		BufferedReader map_file = new BufferedReader(new FileReader(
-				"maps/map1.txt"));
+		//BufferedReader map_file = new BufferedReader(new FileReader(
+		//		"maps/map1.txt"));
+		URL file_url = res_manager.get_resource_url("maps/map1.txt");
+
+		BufferedReader map_file = new BufferedReader(new InputStreamReader(file_url.openStream()));
 		String line;
 		LinkedList<String> lines = new LinkedList<String>();
 		int max_line_length = 0;
