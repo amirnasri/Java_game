@@ -1,0 +1,26 @@
+# Map file for tile-based game
+# (Lines that start with '#' are comments)
+# The tiles are:
+#   (Space) Empty tile
+#   A..Z    Tiles A through Z
+#   s       Star
+#   !       Music Note
+#   *       Goal
+#   g       Bad Guy g (grub)
+#   f       Bad Guy f (fly)
+                                                                 
+                                                           s     s
+                                                     s      s    s
+                       s s s        s s s       s     s      s 
+                      IIIIIII      IIIIIII       s     s         f
+                                                  s        f
+                                  f                 fEF
+                 EF                                 EGD
+        EF  g    CD       g           g            EGAD     *
+BBBBBBBBGHBBBBBBBGHBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBGAAHBBBBBBBBBBB
+------------------------------------------------------------------
+# Initial speeds:
+g -0.1
+f 0.1
+s 0
+* 0
