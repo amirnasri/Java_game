@@ -12,6 +12,7 @@ public class Sprite {
 	protected float y;
 	protected float v_x;
 	protected float v_y;
+	protected int direction = 1;
 	//protected float x_new;
 	//protected float y_new;
 	//private Image image;
@@ -20,7 +21,7 @@ public class Sprite {
 	private static int display_x_offset;
 	private Animation anim;
 	
-	public Sprite(String name, int x, int y, float v_x, float v_y, Animation anim) {
+	Sprite(String name, int x, int y, float v_x, float v_y, Animation anim) {
 		this.name = name;
 		this.x = x;
 		this.y = y;
@@ -31,95 +32,95 @@ public class Sprite {
 		this.image_height = get_height();
 	}
 	
-	public void set_anim(Animation anim) {
+	void set_anim(Animation anim) {
 		this.anim = anim;
 	}
 	
-	public static void set_display_x_offset(int offset) {
+	static void set_display_x_offset(int offset) {
 		display_x_offset = offset;	
 	}
 
 	// Chance for sprite to update its state
-	public void update(int elapsed_time) {
+	void update(int elapsed_time) {
 		anim.update(elapsed_time);
-		if (name.equals("f")) {
-			v_x = (float) (v_x + elapsed_time * (Math.random() - 0.5) * 0.01); 
-			v_y = (float) (elapsed_time * (Math.random() - 0.5) * 0.01); 
-		}
 		//x_new = x + v_x * elapsed_time;
 		//y_new = y + v_y * elapsed_time;
 	}
 	
-	public void update_apply() {
+	//public void update_apply() {
 		//x = x_new;
 		//y = y_new;
-	}
+	//}
 		
-	public void draw(Graphics2D g2d) {
+	void draw(Graphics2D g2d) {
 		g2d.drawImage(anim.get_image(), (int) x - display_x_offset, (int) y, null);
 	}
 	
-	public float set_x(float x) {
+	float set_x(float x) {
 		return this.x = x;
 	}
 	
-	public float set_y(float y) {
+	float set_y(float y) {
 		return this.y = y;
 	}
 	
-	public float get_x() {
+	float get_x() {
 		return x;
 	}
 	
-	public float get_y() {
+	float get_y() {
 		return y;
 	}
 
-	public void set_v_x(float v_x) {
+	void set_v_x(float v_x) {
 		this.v_x = v_x;
 	}
 
-	public void set_v_y(float v_y) {
+	void set_v_y(float v_y) {
 		this.v_y = v_y;
 	}
 
-	public float get_v_x() {
+	float get_v_x() {
 		return v_x;
 	}
 
-	public float get_v_y() {
+	float get_v_y() {
 		return v_y;
 	}
 	
-	public String get_name() {
+	String get_name() {
 		return name;
 	}
 
-	public Rectangle get_bounding_box() {
+	Rectangle get_bounding_box() {
 		//return new Rectangle(x + image_width/2, y + image_height/2, image_width, image_height);
 		return new Rectangle((int) x, (int) y, (int) image_width, (int) image_height);
 	}
 	
-	public float get_width() {
+	float get_width() {
 		return anim.get_width();
 	}
 
-	public float get_height() {
+	float get_height() {
 		return anim.get_height();
 	}
 	
-	public void tile_collision_left() {
+	void tile_collision_left() {
 		set_v_x(-v_x);
 	}
 	
-	public void tile_collision_right() {
+	void tile_collision_right() {
 		set_v_x(-v_x);
 	}
-
-	public void tile_collision_up() {
+	
+	int get_direction() {
+		return direction;
 	}
 
-	public void tile_collision_down() {
+	void tile_collision_up() {
+	}
+
+	void tile_collision_down() {
 		set_v_y(0);
 	}
 

@@ -32,8 +32,10 @@ public class Resource_manager {
 	private void load_images() throws IOException {
 		String image_path = "images/";
 		images.put("s", get_resource_image(image_path + "star1.png").getImage());
-		images.put("g1", get_resource_image(image_path + "grub1.png").getImage());
-		images.put("g2", get_resource_image(image_path + "grub2.png").getImage());
+		images.put("gl1", get_resource_image(image_path + "grub1.png").getImage());
+		images.put("gl2", get_resource_image(image_path + "grub2.png").getImage());
+		images.put("gr1", get_scaled_image(get_resource_image(image_path + "grub1.png").getImage(), -1, 1));
+		images.put("gr2", get_scaled_image(get_resource_image(image_path + "grub2.png").getImage(), -1, 1));
 		images.put("f1", get_resource_image(image_path + "fly1.png").getImage());
 		images.put("f2", get_resource_image(image_path + "fly2.png").getImage());
 		images.put("f3", get_resource_image(image_path + "fly3.png").getImage());
@@ -113,10 +115,18 @@ public class Resource_manager {
 			dur_list.add(50);
 			dur_list.add(50);
 			break;
-		case "grub":
+		case "grub_right":
 			image_list = new ArrayList<Image>();
-			image_list.add(get_image("g1"));
-			image_list.add(get_image("g2"));
+			image_list.add(get_image("gr1"));
+			image_list.add(get_image("gr2"));
+			dur_list = new ArrayList<>();
+			dur_list.add(100);
+			dur_list.add(100);
+			break;
+		case "grub_left":
+			image_list = new ArrayList<Image>();
+			image_list.add(get_image("gl1"));
+			image_list.add(get_image("gl2"));
 			dur_list = new ArrayList<>();
 			dur_list.add(100);
 			dur_list.add(100);

@@ -1,6 +1,3 @@
-import java.awt.Image;
-import java.util.ArrayList;
-
 
 public class Player extends Sprite {
 	enum States {
@@ -8,7 +5,6 @@ public class Player extends Sprite {
 	}
 
 	private States state;
-	private int dir = 1;
 	private Resource_manager res_manager;
 	/*
 	private ArrayList<Integer> dur_list = new ArrayList<>();
@@ -19,7 +15,7 @@ public class Player extends Sprite {
 	private ArrayList<Image> image_list_still_right = new ArrayList<Image>();
 	*/
 	
-	public Player(int x, int y, float v_x, float v_y, Animation anim, Resource_manager rm) {
+	Player(int x, int y, float v_x, float v_y, Animation anim, Resource_manager rm) {
 		super("player", x, y, v_x, v_y, anim);
 		this.res_manager = rm;
 		
@@ -42,11 +38,30 @@ public class Player extends Sprite {
 		state = States.IN_AIR;
 	}
 
-	public void update(int elapsed_time) {
+	void update(int elapsed_time) {
 		super.update(elapsed_time);
-		//if (state == States.IN_AIR) {
-			v_y = v_y + 0.1f;
-		//}
+		// update v_y
+		// if (state == States.IN_AIR) {
+		v_y = v_y + 0.1f;
+		// }
+		
+		// update direction and image
+		if (Math.signum(direction) != Math.signum(v_x)) {
+			// System.out.println("dir changed from " + Math.signum(dir) + "to "
+			// + Math.signum(v_x));
+			if (Math.signum(v_x) < 0) {
+				// set_anim(new Animation(image_list_left, dur_list));
+				set_anim(res_manager.get_anim("mario_run_left"));
+			} else if (Math.signum(v_x) > 0) {
+				set_anim(res_manager.get_anim("mario_run_right"));
+			} else {
+				if (direction < 0)
+					set_anim(res_manager.get_anim("mario_still_left"));
+				else
+					set_anim(res_manager.get_anim("mario_still_right"));
+			}
+			direction = (int) Math.signum(v_x);
+		}
 	}
 	
 	public void tile_collision_left() {
@@ -60,28 +75,6 @@ public class Player extends Sprite {
 	public void tile_collision_down() {
 		set_v_y(0);
 		state = States.ON_GROUND;
-	}
-
-	public void set_v_x(float v_x) {
-		if (Math.signum(dir) != Math.signum(v_x)) {
-			//System.out.println("dir changed from " + Math.signum(dir) + "to " + Math.signum(v_x));
-			if (Math.signum(v_x) < 0) {
-				//set_anim(new Animation(image_list_left, dur_list));
-				set_anim(res_manager.get_anim("mario_run_left"));
-			}
-			else if (Math.signum(v_x) > 0) {
-				set_anim(res_manager.get_anim("mario_run_right"));
-			}
-			else {
-				if (dir < 0)
-					set_anim(res_manager.get_anim("mario_still_left"));
-				else
-					set_anim(res_manager.get_anim("mario_still_right"));
-			}
-			dir = (int) Math.signum(v_x);
-		}
-
-		super.set_v_x(v_x);
 	}
 
 	public void jump() {

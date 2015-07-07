@@ -95,6 +95,7 @@ public class Game_manager {
 		sprites_right = new LinkedList<Sprite>();
 		screen_manager = new Screen_manager();
 		res_manager = new Resource_manager(screen_manager);
+		Sprite_factory.res_manager = res_manager;
 		//load_images();
 		load_game_map();
 
@@ -125,16 +126,14 @@ public class Game_manager {
 				elapsed_time = (int) (new_time - current_time);
 			current_time = new_time;
 
-			// Update sprites coordinates and check collision between them and tiles.
-			// Adjust sprites coordinates if necessary.
 			move_check_tile_collision(player, elapsed_time);
 			for (Sprite sprite : sprites_middle)
 				move_check_tile_collision(sprite, elapsed_time);
 
 			check_collision(elapsed_time);
+			update(elapsed_time);
 
 			render_display();
-			update(elapsed_time);
 
 			try {
 				Thread.sleep(Timer_delay);
@@ -149,6 +148,11 @@ public class Game_manager {
 		return r1.intersects(r2);
 	}
 	
+	/* Update sprites coordinates and check collision between them and tiles.
+	 * Adjust sprites coordinates if necessary.
+	 * All updates in postions (moves) should be done here. Status updates should be done
+	 * in the update functions for player and sprites.
+	 */
 	private void move_check_tile_collision(Sprite sprite, int elapsed_time) {
 		boolean collision_up = false;
 		boolean collision_down = false;
@@ -263,6 +267,7 @@ public class Game_manager {
 		 */
 	}
 
+	/* Check collision between player and sprites	 */
 	private boolean check_collision(int elapsed_time) {
 
 		Rectangle player_bb = player.get_bounding_box();
@@ -275,8 +280,19 @@ public class Game_manager {
 			Rectangle s_bb = s.get_bounding_box();
 			g2d.drawRect(s_bb.x, s_bb.y, s_bb.width, s_bb.height);
 			if (rectangle_collision(player_bb, s.get_bounding_box())) {
-				if (player.get_state() == Player.States.IN_AIR && player.get_v_y() > 0) {
-					it.remove();
+				/* The play only kills the sprite if it is:
+				 * a) in air
+				 * b) descending
+				 * c) looking in the direction of the sprite
+				 */
+				if (player.get_state() == Player.States.IN_AIR 
+						&& player.get_v_y() > 0
+						&& ((player.get_direction() >= 0 && (player.get_x() < s.get_x()))
+								|| (player.get_direction() <= 0 && (player.get_x() > s.get_x())))) {
+					
+					//it.remove();
+					s.set_v_y(-3);
+					s.set_v_x(1);
 					player.set_v_y(-player.get_v_y());
 				}
 			}
@@ -432,44 +448,31 @@ public class Game_manager {
 				if (ch >= 'A' && ch <= 'I') {
 					tiles.set_tile(i, j, res_manager.get_image(Character.toString(ch)));
 				} else {
-					Animation anim;
-					switch (ch) {
-					case 'f':
-						anim = res_manager.get_anim("fly");
-						break;
-
-					case 'g':
-						anim = res_manager.get_anim("grub");
-						break;
-
-					case ' ':
-						anim = null;
-						break;
-						
-					default:
-						anim = res_manager.get_anim(Character.toString(ch));
-						break;
-					}
 
 					tiles.set_tile(i, j, null);
 
-					if (anim != null) {
-						Sprite sprite = new Sprite(String.valueOf(ch) , i * tile_width, j * tile_height,
-								sprite_speed.get(ch), 0, anim);
-						int sprite_x = (int) sprite.get_x();
-						// Part of display that is updated
-						int active_display_x_min = 0;
-						int active_display_x_max = display_width;
-						if (sprite_x < active_display_x_min) {
-							sprites_left.add(sprite);
-						}
-						else if (sprite_x < active_display_x_max) {
+					Sprite sprite = Sprite_factory.make(ch);
+					//Sprite sprite = new Sprite(String.valueOf(ch) , i * tile_width, j * tile_height,
+					//		sprite_speed.get(ch), 0, anim);
+					if (sprite != null) {
+						sprite.set_v_x(sprite_speed.get(ch));
+						sprite.set_x(i * tile_width);
+						sprite.set_y(j * tile_height);
+					
+//						int sprite_x = (int) sprite.get_x();
+//						// Part of display that is updated
+//						int active_display_x_min = 0;
+//						int active_display_x_max = display_width;
+//						if (sprite_x < active_display_x_min) {
+//							sprites_left.add(sprite);
+//						}
+//						else if (sprite_x < active_display_x_max) {
 							sprites_middle.add(sprite);
 							System.out.println("added middle " + sprite.get_name());
-						}
-						else {
-							sprites_right.add(sprite);
-						}
+//						}
+//						else {
+//							sprites_right.add(sprite);
+//						}
 					}
 				}
 			}
@@ -523,39 +526,40 @@ public class Game_manager {
 		int active_display_x_min = (int) player.get_x() - display_width;
 		int active_display_x_max = (int) player.get_x() + display_width;
 		
-		if (player.get_v_x() > 0) {
-			/* Moving in the right direction
-			 * Two possibilities: 
-			 * - Left-most sprite in sprites_middle goes out of screen to the left
-			 * - Left-most sprite in sprites_right comes into the screen to the right 
-			 */
-
-			// Left-most sprite in sprites_middle goes out
-			if (!sprites_middle.isEmpty() && sprite_middle_x_min < active_display_x_min)
-				sprites_left.addLast(sprites_middle.remove(sprite_middle_x_min_index));
-
-			// Left-most sprite in sprites_right comes in
-			Sprite sprite_right_left = sprites_right.peekFirst();
-			if (!sprites_right.isEmpty() && sprite_right_left.get_x() < active_display_x_max) {
-				sprites_middle.addLast(sprites_right.pollFirst());
-			}
-		}
-		else {
-			/* Moving in the left direction
-			 * Two possibilities: 
-			 * - Right-most sprite in sprites_middle goes out of screen to the right
-			 * - Right-most sprite in sprites_left comes into the screen to the left 
-			 */
-			
-			// Right-most sprite in sprites_middle goes out
-			if (!sprites_middle.isEmpty() && sprite_middle_x_max > active_display_x_max)
-				sprites_right.addFirst(sprites_middle.remove(sprite_middle_x_max_index));
-
-			// Right-most sprite in sprites_left comes in
-			Sprite sprite_left_right = sprites_left.peekLast();
-			if (!sprites_left.isEmpty() && sprite_left_right.get_x() > active_display_x_min)
-				sprites_middle.addFirst(sprites_left.pollLast());
-		}
+		
+//		if (player.get_v_x() > 0) {
+//			/* Moving in the right direction
+//			 * Two possibilities: 
+//			 * - Left-most sprite in sprites_middle goes out of screen to the left
+//			 * - Left-most sprite in sprites_right comes into the screen to the right 
+//			 */
+//
+//			// Left-most sprite in sprites_middle goes out
+//			if (!sprites_middle.isEmpty() && sprite_middle_x_min < active_display_x_min)
+//				sprites_left.addLast(sprites_middle.remove(sprite_middle_x_min_index));
+//
+//			// Left-most sprite in sprites_right comes in
+//			Sprite sprite_right_left = sprites_right.peekFirst();
+//			if (!sprites_right.isEmpty() && sprite_right_left.get_x() < active_display_x_max) {
+//				sprites_middle.addLast(sprites_right.pollFirst());
+//			}
+//		}
+//		else {
+//			/* Moving in the left direction
+//			 * Two possibilities: 
+//			 * - Right-most sprite in sprites_middle goes out of screen to the right
+//			 * - Right-most sprite in sprites_left comes into the screen to the left 
+//			 */
+//			
+//			// Right-most sprite in sprites_middle goes out
+//			if (!sprites_middle.isEmpty() && sprite_middle_x_max > active_display_x_max)
+//				sprites_right.addFirst(sprites_middle.remove(sprite_middle_x_max_index));
+//
+//			// Right-most sprite in sprites_left comes in
+//			Sprite sprite_left_right = sprites_left.peekLast();
+//			if (!sprites_left.isEmpty() && sprite_left_right.get_x() > active_display_x_min)
+//				sprites_middle.addFirst(sprites_left.pollLast());
+//		}
 	}
 
 	private int get_display_x_min(int player_x) {
