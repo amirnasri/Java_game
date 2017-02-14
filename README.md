@@ -1,6 +1,11 @@
+# Mario game in Java
+This Java game is developed from scratch using the ideas from the book [Developing Games in Java](http://www.brackeen.com/javagamebook/). 
+# Screenshot
+![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")
+
+
 <html>
 <body>
-<h2>Mario game in Java</h2>
 <br>
 <h3>Screenshot</h3>
 <img src="https://github.com/amirnasri/Java_game/blob/master/Screenshot.png" alt="Screen Shot">
